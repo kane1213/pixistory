@@ -11,16 +11,16 @@ const bunny = ref(null)
 const app = new PIXI.Application();
 onMounted(() => {
   story.value.appendChild(app.view)
-  app.loader.add('bunny', bunny.value.src).load((loader, resources) => {
-    const bunny = new PIXI.Sprite(resources.bunny.texture)
-    bunny.x = app.renderer.width / 2
-    bunny.y = app.renderer.height / 2
-    bunny.anchor.x = 0.5
-    bunny.anchor.y = 0.5
-    console.log(bunny)
-    app.stage.addChild(bunny)
+  app.loader.add('bunny', '/src/assets/images/bunny.png').load((loader, resources) => {
+    console.log({ loader });
+    const _bunny = new PIXI.Sprite(resources.bunny.texture)
+    _bunny.x = app.renderer.width / 2
+    _bunny.y = app.renderer.height / 2
+    _bunny.anchor.x = 0.5
+    _bunny.anchor.y = 0.5
+    app.stage.addChild(_bunny)
     app.ticker.add(() => {
-      bunny.rotation += 0.01
+      _bunny.rotation += 0.01
     })
   })
 })
