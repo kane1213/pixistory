@@ -4,7 +4,8 @@
     .brand BRAND
     .links
       router-link.mr-2(to="/home") Home
-      router-link(to="/about") About
+      router-link.mr-2(to="/about") About
+      router-link(to="/story") Story
   .flex-1
     slot
   footerComp
