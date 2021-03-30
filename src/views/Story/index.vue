@@ -6,8 +6,11 @@ img(src="@/assets/images/bunny.png" ref="bunny" style="display: none;")
 <script lang="ts" setup="props">
 import { ref, onMounted } from 'vue'
 import * as PIXI from 'pixi.js'
+import PhyTouch from 'phy-touch'
+
 const story = ref(null)
 const bunny = ref(null)
+var phytouch = null
 const app = new PIXI.Application();
 onMounted(() => {
   story.value.appendChild(app.view)
@@ -23,5 +26,26 @@ onMounted(() => {
       _bunny.rotation += 0.01
     })
   })
+
+  phytouch = new PhyTouch({
+    touch: '#story',
+    vertical: true,
+    target: { y: 0 },
+    property: 'y',
+    min: 0,
+    max: 2000,
+    sensitivity: 1,
+    factor: 1,
+    moveFactor: 1,
+    step: 45,
+    bindSelf: false,
+    maxSpeed: 2,
+    value: 0,
+    change (value) {
+      console.log(value)
+    }
+  })
+
+
 })
 </script>
