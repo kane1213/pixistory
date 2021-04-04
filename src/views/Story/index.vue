@@ -35,20 +35,21 @@ onMounted(() => {
 
     const allTimeLine = new TimelineMax({ paused: true })
     const timelineOne = new TimelineMax({ delay: 0.0 })
-    const timelineTwo = new TimelineMax({ delay: 0.2 })
+    const timelineTwo = new TimelineMax({ delay: 0.0 })
     // const tweenMaxOne = new TweenMax(_bunny, 0.5, { alpha: 1, x: 200 })
     // const tweenMaxTwo = new TweenMax(_bunny, 0.5, { x: 200 })
     
-    const circleSpr = new PIXI.Sprite.from('/src/assets/images/circles/c6.png')
+    const circleSpr = new PIXI.Sprite.from('/src/assets/images/circles/c1.png')
     circleSpr.position.set(clientWidth * .5, clientHeight * .5)
     circleSpr.anchor.x = circleSpr.anchor.y = 0.5
-    circleSpr.alpha = 0.5
+    circleSpr.alpha = 0
     app.stage.addChild(circleSpr)
-    timelineOne.add(new TweenMax(_bunny, 0.5, { alpha: 1, x: app.renderer.width * .5 }), 0)
-    timelineTwo.add(new TweenMax(circleSpr, 0.5, { alpha: 1 }), 0)
+
+    timelineOne.add(new TweenMax(_bunny, 0.2, { alpha: 1, x: app.renderer.width * .5 }), 0)
+    timelineTwo.add(new TweenMax(circleSpr, 0.2, { alpha: 1 }), 0)
     // timelineOne.add(tweenMaxTwo, 0)
     allTimeLine.add(timelineOne, 0)
-    allTimeLine.add(timelineTwo, 1)
+    allTimeLine.add(timelineTwo, 0)
     
     
     // const circlesSpr = new Array(38).fill('').map((v,i) => new PIXI.Texture(
@@ -82,11 +83,18 @@ onMounted(() => {
       maxSpeed: 2,
       value: 0,
       change (value: number) {
-        // console.log(value)
+        imgSchene(value)
         allTimeLine.seek(value / max)
       }
     })
 
+    function imgSchene (value) {
+      if (value / max < 0.2) return;
+      const imgIdx = Math.floor(((value / max - .2) / .3 * 38));
+      if (imgIdx >= 38) return
+      circleSpr.texture = new PIXI.Texture.from(`/src/assets/images/circles/c${imgIdx}.png`)
+
+    }
   })
 
   
