@@ -13,7 +13,7 @@ import { TweenMax, TimelineMax } from 'gsap'
 const story = ref(null)
 const bunny = ref(null)
 var phytouch = null
-const app = new PIXI.Application();
+const app = new PIXI.Application({ transparent: true});
 
 onMounted(() => {
 
