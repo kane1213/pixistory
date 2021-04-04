@@ -35,22 +35,31 @@ onMounted(() => {
 
     const allTimeLine = new TimelineMax({ paused: true })
     const timelineOne = new TimelineMax({ delay: 0.0 })
+    const timelineTwo = new TimelineMax({ delay: 0.2 })
     // const tweenMaxOne = new TweenMax(_bunny, 0.5, { alpha: 1, x: 200 })
     // const tweenMaxTwo = new TweenMax(_bunny, 0.5, { x: 200 })
+    
+    const circleSpr = new PIXI.Sprite.from('/src/assets/images/circles/c6.png')
+    circleSpr.position.set(clientWidth * .5, clientHeight * .5)
+    circleSpr.anchor.x = circleSpr.anchor.y = 0.5
+    circleSpr.alpha = 0.5
+    app.stage.addChild(circleSpr)
     timelineOne.add(new TweenMax(_bunny, 0.5, { alpha: 1, x: app.renderer.width * .5 }), 0)
+    timelineTwo.add(new TweenMax(circleSpr, 0.5, { alpha: 1 }), 0)
     // timelineOne.add(tweenMaxTwo, 0)
     allTimeLine.add(timelineOne, 0)
+    allTimeLine.add(timelineTwo, 1)
     
-    const circlesSpr = new Array(38).fill('').map((v,i) => new PIXI.Texture(
-      new PIXI.Texture.from(`/src/assets/images/circles/c${i+1}.png`),
-      new PIXI.Rectangle(0, 0, 800, 800)
-    ))
-
-    const animateSpr = new PIXI.AnimatedSprite(circlesSpr);
-     animateSpr.position.set((clientWidth - 800) * .5, (clientHeight - 800) * .5)
-     animateSpr.animationSpeed = 0.1
-     animateSpr.play()
-     app.stage.addChild(animateSpr)
+    
+    // const circlesSpr = new Array(38).fill('').map((v,i) => new PIXI.Texture(
+    //   new PIXI.Texture.from(`/src/assets/images/circles/c${i+1}.png`),
+    //   new PIXI.Rectangle(0, 0, 800, 800)
+    // ))
+    // const animateSpr = new PIXI.AnimatedSprite(circlesSpr);
+    //  animateSpr.position.set((clientWidth - 800) * .5, (clientHeight - 800) * .5)
+    //  animateSpr.animationSpeed = 0.1
+    //  animateSpr.play()
+    //  app.stage.addChild(animateSpr)
 
 
 
