@@ -6,7 +6,7 @@
       router-link.mr-2(to="/home") Home
       router-link.mr-2(to="/about") About
       router-link(to="/story") Story
-  .flex-1
+  #mainLayout.flex-1
     slot
   footerComp
 </template>
