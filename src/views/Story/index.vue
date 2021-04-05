@@ -51,6 +51,7 @@ onMounted(() => {
     allTimeLine.add(timelineOne, 0)
     allTimeLine.add(timelineTwo, 0)
     
+    const graphics = new PIXI.Graphics()
     
     // const circlesSpr = new Array(38).fill('').map((v,i) => new PIXI.Texture(
     //   new PIXI.Texture.from(`/src/assets/images/circles/c${i+1}.png`),
@@ -62,7 +63,7 @@ onMounted(() => {
     //  animateSpr.play()
     //  app.stage.addChild(animateSpr)
 
-
+    app.stage.addChild(graphics)
 
 
 
@@ -84,6 +85,7 @@ onMounted(() => {
       value: 0,
       change (value: number) {
         imgSchene(value)
+        whiteCircle(value)
         allTimeLine.seek(value / max)
       }
     })
@@ -93,7 +95,17 @@ onMounted(() => {
       const imgIdx = Math.floor(((value / max - .2) / .3 * 38));
       if (imgIdx >= 38) return
       circleSpr.texture = new PIXI.Texture.from(`/src/assets/images/circles/c${imgIdx}.png`)
+    }
 
+    function whiteCircle (value) {
+      graphics.clear()
+      if (value / max < 0.5) return;
+      const radius = (value / max - .5) / .3 * 800
+      if (radius > 800) return
+      
+      graphics.beginFill(0xFFFFFF)
+      graphics.drawCircle(clientWidth * .5, clientHeight * .5, radius)
+      graphics.endFill()
     }
   })
 
