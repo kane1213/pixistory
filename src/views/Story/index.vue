@@ -131,6 +131,7 @@ onMounted(() => {
   //   allTimeLine.add(timelineOne, 0)
   //   allTimeLine.add(timelineTwo, 1)
     
+    const graphics = new PIXI.Graphics()
     
   //   // const circlesSpr = new Array(38).fill('').map((v,i) => new PIXI.Texture(
   //   //   new PIXI.Texture.from(`/src/assets/images/circles/c${i+1}.png`),
@@ -141,16 +142,6 @@ onMounted(() => {
   //   //  animateSpr.animationSpeed = 0.1
   //   //  animateSpr.play()
   //   //  app.stage.addChild(animateSpr)
-
-
-
-
-
-
-
-  
-
-  
 
 })
 </script>
