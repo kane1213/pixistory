@@ -1,10 +1,28 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
-
 // https://vitejs.dev/config/
+
+
+
+// import path from 'path'
+// import fs from 'fs'
+// const dirnameExportImg = './src/assets/images/circles'
+// console.log({ dirnameExportImg })
+// fs.readdir(dirnameExportImg, function (err, files) {
+//   if (err) {
+//     console.log(err)
+//   }
+//   files.map(
+//     (file) => { console.log(file) }
+//   )
+// })
+
+
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue()
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src')
