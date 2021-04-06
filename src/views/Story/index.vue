@@ -67,6 +67,7 @@ onMounted(() => {
       
       phytouch = new PhyTouch({
         touch: '#story',
+        reverse: true,
         vertical: true,
         target: { y: 0 },
         property: 'y',
