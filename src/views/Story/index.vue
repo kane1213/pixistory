@@ -12,7 +12,7 @@ import { TweenMax, TimelineMax } from 'gsap'
 
 const story = ref(null)
 const bunny = ref(null)
-const imgs = ['/src/assets/images/recipe.jpg', '/src/assets/images/bunny.png', ...new Array(38).fill('').map((v,i)=>`/src/assets/images/circles/c${i+1}.png`)]
+const imgs = ['/src/assets/images/recipe1/meats.png', '/src/assets/images/bunny.png', ...new Array(38).fill('').map((v,i)=>`/src/assets/images/circles/c${i+1}.png`)]
 var phytouch = null
 const { clientWidth, clientHeight } = document.getElementById('mainLayout')
 const app = new PIXI.Application({
@@ -38,29 +38,34 @@ onMounted(() => {
   app.loader
     .add(imgs)
     .load((loader, resources) => {
-      console.log({loader, resources})
-
-      const _bunny = new PIXI.Sprite.from(imgs[1])  //
-      _bunny.x = 0 // app.renderer.width / 2
-      _bunny.y = app.renderer.height / 2
-      _bunny.anchor.x = 0.5
-      _bunny.anchor.y = 0.5
-      _bunny.alpha = 0
-      senceOne.addChild(_bunny)
-      app.ticker.add(() => {
-        _bunny.rotation += 0.01
-      })
+      const _meats = new PIXI.Sprite.from(imgs[0])
+      const _scaleRate = app.renderer.width / _meats.width
+      _meats.x = app.renderer.width * .5
+      _meats.y = 0
+      _meats.anchor.x = .5
+      _meats.anchor.y = .5
+      _meats.alpha = 0
+      _meats.scale.x = _scaleRate
+      _meats.scale.y = _scaleRate
+      senceOne.addChild(_meats)
+      // const _bunny = new PIXI.Sprite.from(imgs[1])  //
+      // _bunny.x = 0 // app.renderer.width / 2
+      // _bunny.y = app.renderer.height / 2
+      // _bunny.anchor.x = 0.5
+      // _bunny.anchor.y = 0.5
+      // _bunny.alpha = 0
+      // senceOne.addChild(_bunny)
+      // app.ticker.add(() => {
+      //   _bunny.rotation += 0.01
+      // })
+      console.log(_meats)
 
       const allTimeLine = new TimelineMax({ paused: true })
       const timelineOne = new TimelineMax({ delay: 0.0 })
-      const timelineTwo = new TimelineMax({ delay: 0.2 })
-      const circleSpr = new PIXI.Sprite.from('/src/assets/images/circles/c1.png')
-      circleSpr.position.set(clientWidth * .5, clientHeight * .5)
-      circleSpr.anchor.x = circleSpr.anchor.y = 0.5
-      circleSpr.alpha = 0
-      senceOne.addChild(circleSpr)
-      timelineOne.add(new TweenMax(_bunny, 0.3, { alpha: 1, x: app.renderer.width * .5 }), 0)
-      timelineTwo.add(new TweenMax(circleSpr, 0.1, { alpha: 1 }), 0)
+      const timelineTwo = new TimelineMax({ delay: .2 })
+     
+      timelineOne.add(new TweenMax(_meats, 0.1, { alpha: 1, y: app.renderer.height * .5 }), 0)
+      timelineTwo.add(new TweenMax(_meats, 0.1, { alpha: 0 }), 0)
       allTimeLine.add(timelineOne, 0)
       allTimeLine.add(timelineTwo, 0)
       
@@ -82,7 +87,6 @@ onMounted(() => {
         value: 0,
         change (value: number) {
           allTimeLine.seek(value / max)
-          circleAni(value)
         }
       })
 
