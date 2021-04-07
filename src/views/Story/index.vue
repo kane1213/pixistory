@@ -12,7 +12,10 @@ import { TweenMax, TimelineMax } from 'gsap'
 
 const story = ref(null)
 const bunny = ref(null)
-const imgs = ['/src/assets/images/recipe1/meats.png', '/src/assets/images/bunny.png', ...new Array(38).fill('').map((v,i)=>`/src/assets/images/circles/c${i+1}.png`)]
+
+const material: string[] = ['meats.png', 'ingredient1.jpg', 'ingredient2.jpg']
+
+const imgs = [ ...material.map(str => `/src/assets/images/recipe1/${str}`), ...new Array(38).fill('').map((v,i)=>`/src/assets/images/circles/c${i+1}.png`)]
 var phytouch = null
 const { clientWidth, clientHeight } = document.getElementById('mainLayout')
 const app = new PIXI.Application({
@@ -24,9 +27,6 @@ const app = new PIXI.Application({
 onMounted(() => {
   // app.renderer.resize(clientWidth, clientHeight)
   // app.renderer.autoResize = true
-  
-
-
   const senceOne = new PIXI.Container()
   app.stage.addChild(senceOne)
 
@@ -39,15 +39,42 @@ onMounted(() => {
     .add(imgs)
     .load((loader, resources) => {
       const _meats = new PIXI.Sprite.from(imgs[0])
+      const _meatText = new PIXI.Text('ローストビーフ',{fontSize: 32, fill : 0xff1010, align : 'center'})
+      const _ingre1 = new PIXI.Sprite.from(imgs[1])
+      const _ingre2 = new PIXI.Sprite.from(imgs[2])
+
+
       const _scaleRate = app.renderer.width / _meats.width
       _meats.x = app.renderer.width * .5
       _meats.y = 0
       _meats.anchor.x = .5
       _meats.anchor.y = .5
       _meats.alpha = 0
-      _meats.scale.x = _scaleRate
-      _meats.scale.y = _scaleRate
+      _meats.scale.x = _meats.scale.y = _scaleRate
+      
+
+      _meatText.x = app.renderer.width - 15
+      _meatText.y = app.renderer.height * .5
+      _meatText.alpha = 0
+      _meatText.anchor.x = 1
+
+      const _scaleRate1 = app.renderer.width / _ingre1.width
+      const _scaleRate2 = app.renderer.width / _ingre2.width
+
+      _ingre1.x = _ingre2.x = app.renderer.width * .5
+      _ingre1.y = _ingre2.y = app.renderer.height * .5
+      _ingre1.anchor.x = _ingre1.anchor.y = _ingre2.anchor.x = _ingre2.anchor.y = .5
+      _ingre1.alpha = _ingre2.alpha = 0
+
+      _ingre1.scale.x = _ingre1.scale.y = _scaleRate1
+      _ingre2.scale.x = _ingre2.scale.y = _scaleRate2
+
+      
+
       senceOne.addChild(_meats)
+      senceOne.addChild(_meatText)
+      senceOne.addChild(_ingre1)
+      senceOne.addChild(_ingre2)
       // const _bunny = new PIXI.Sprite.from(imgs[1])  //
       // _bunny.x = 0 // app.renderer.width / 2
       // _bunny.y = app.renderer.height / 2
@@ -58,16 +85,31 @@ onMounted(() => {
       // app.ticker.add(() => {
       //   _bunny.rotation += 0.01
       // })
-      console.log(_meats)
 
       const allTimeLine = new TimelineMax({ paused: true })
-      const timelineOne = new TimelineMax({ delay: 0.0 })
-      const timelineTwo = new TimelineMax({ delay: .2 })
+      const timeline1 = new TimelineMax({ delay: 0.0 })
+      const timeline2 = new TimelineMax({ delay: .1 })
+      const timeline3 = new TimelineMax({ delay: .2 })
+      const timeline4 = new TimelineMax({ delay: .3 })
+      const timeline5 = new TimelineMax({ delay: .4 })
+      const timeline6 = new TimelineMax({ delay: .5 })
+      const timeline7 = new TimelineMax({ delay: .6 })
      
-      timelineOne.add(new TweenMax(_meats, 0.1, { alpha: 1, y: app.renderer.height * .5 }), 0)
-      timelineTwo.add(new TweenMax(_meats, 0.1, { alpha: 0 }), 0)
-      allTimeLine.add(timelineOne, 0)
-      allTimeLine.add(timelineTwo, 0)
+      timeline1.add(new TweenMax(_meats, 0.05, { alpha: 1, y: app.renderer.height * .5 }), 0)
+      timeline2.add(new TweenMax(_meatText, 0.05, { alpha: 1, y: app.renderer.height * .75 }), 0)
+      timeline3.add(new TweenMax([_meats, _meatText], 0.1, { alpha: 0 }), 0)
+      timeline4.add(new TweenMax(_ingre1, 0.05, { alpha: 1 }), 0)
+      timeline5.add(new TweenMax(_ingre1, 0.05, { y: 0, alpha: 0 }), 0)
+      timeline6.add(new TweenMax(_ingre2, 0.05, { alpha: 1 }), 0)
+      timeline7.add(new TweenMax(_ingre2, 0.05, { y: 0, alpha: 0 }), 0)
+
+      allTimeLine.add(timeline1, 0)
+      allTimeLine.add(timeline2, 0)
+      allTimeLine.add(timeline3, 0)
+      allTimeLine.add(timeline4, 0)
+      allTimeLine.add(timeline5, 0)
+      allTimeLine.add(timeline6, 0)
+      allTimeLine.add(timeline7, 0)
       
       
       phytouch = new PhyTouch({
