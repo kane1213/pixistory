@@ -10,15 +10,15 @@ import { ref, onMounted } from 'vue'
 import * as PIXI from 'pixi.js'
 import PhyTouch from 'phy-touch'
 import { TweenMax, TimelineMax } from 'gsap'
-
+import imgs from '@/service/recipe1.js'
 export default defineComponent({
   setup () {
     const story = ref()
-    const material = ['meats.png', 'ingredient1.png', 'ingredient2.png', ...new Array(6).fill(1).map((v, i) => `step${v + i}.png`)]
-    const imgs = material.map(str => `/src/assets/images/recipe1/${str}`)
+    // console.log(imgs)
+    // const material = ['meats.png', 'ingredient1.png', 'ingredient2.png', ...new Array(6).fill(1).map((v, i) => `step${v + i}.png`)]
+    // const imgs = material.map(str => `/src/assets/images/recipe1/${str}`)
     var phytouch = null
     
-
     onMounted(() => {
       const mayLayout = document.getElementById('mainLayout')!
       const { clientWidth, clientHeight } = mayLayout
@@ -38,7 +38,7 @@ export default defineComponent({
       app.loader
         .add(imgs)
         .load((loader, resources) => {
-          const _sprites: PIXI.Sprite[] = imgs.map((path:string):PIXI.Sprite => PIXI.Sprite.from(path))
+          const _sprites: PIXI.Sprite[] = imgs.map((path:any):PIXI.Sprite => PIXI.Sprite.from(path))
           const _meatText = new PIXI.Text('ローストビーフ',{fontSize: 32, fill : 0xff1010, align : 'center'})
           const { width: appWidth, height: appHeight } = app.renderer
           _sprites.forEach((sprite,idx) => {
@@ -114,11 +114,7 @@ export default defineComponent({
           //         }
           //       }
           //     })
-          console.log('---------1')
-          console.log(story)
           if (story.value) {
-            console.log('---------2')
-            console.log(story.value)
             const element: HTMLDivElement = story.value!
             element.appendChild(app.view)
           }
