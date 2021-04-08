@@ -46,7 +46,7 @@ export default defineComponent({
             senceOne.addChild(sprite)
             if (idx > 0) {
               sprite.alpha = 0
-              sprite.y = 0
+              sprite.y = appHeight
             } else {
               sprite.y = appHeight * .5
             }
@@ -77,7 +77,7 @@ export default defineComponent({
             if (sidx < _sprites.length - 2) {
               const _timeline2 = new TimelineMax({delay: (_delay++) * stepDelay})
               timelines.push(_timeline2)
-              _timeline2.add(new TweenMax(sprite, stepDelay, { y: appHeight, alpha: 0 }), 0)
+              _timeline2.add(new TweenMax(sprite, stepDelay, { y: 0, alpha: 0 }), 0)
             }
           })
 
