@@ -10,7 +10,8 @@ import { ref, onMounted } from 'vue'
 import * as PIXI from 'pixi.js'
 import PhyTouch from 'phy-touch'
 import { TweenMax, TimelineMax } from 'gsap'
-import imgs from '@/service/recipe1.js'
+import imgs  from './recipe1.js'
+
 export default defineComponent({
   setup () {
     const story = ref()

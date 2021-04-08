@@ -14,5 +14,5 @@
     "declaration": false,
     "noImplicitAny": false
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.ts", "src/**/*.vue"]
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.ts", "src/**/*.vue", "src/service/recipe1.js"]
 }
