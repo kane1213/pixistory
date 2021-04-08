@@ -1,21 +1,26 @@
 <template lang="pug">
-h1 HOME PAGE
-div {{ counter }}
-button.bg-black.text-white.px-2.rounded-lg(@click.stop="addCount") ADD COUNTER
+.p-3
+  .item(v-for="item in items" :key="item.text" @click.stop="routerTo(item.path)")
+    img(:src="meats")
+    .itemLabel {{ item.text }}
 </template>
 
 
 
 <script lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { defineComponent } from 'vue'
+import meatImg from '/src/assets/images/recipe1/meats.png'
 export default defineComponent({
   setup () {
-    const counter = ref(0)
-    function addCount () {
-      counter.value += 1
+    const items = ref([{ text: 'ローストビーフ', path: 'Story' }])
+    const meats = meatImg
+    const router = useRouter()
+    function routerTo (name: string): void {
+      router.push({ name })
     }
-    return { counter, addCount }
+    return { items, meats, routerTo }
   }
 
   // import ajax from "/src/utils/ajax";
@@ -26,3 +31,10 @@ export default defineComponent({
 })
 
 </script>
+
+<style scoped lang="sass">
+  .item
+    @apply rounded-lg bg-gray-100 shadow-md
+  .itemLabel
+    @apply bg-gray-600 text-white rounded-b-lg text-center
+</style>
