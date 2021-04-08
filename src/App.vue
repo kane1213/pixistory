@@ -7,7 +7,7 @@ layout
 import { reactive, computed, ref } from 'vue'
 import { useStore } from 'vuex'
 import layout from '@/components/layout/default.vue'
-import { detectIsMobile } from '@/service/detectMobile.js'
+// import { detectIsMobile } from '@/service/detectMobile.js'
 const themeColor = reactive({
   main: '#eee',
   sec: '#aaa'
@@ -15,14 +15,14 @@ const themeColor = reactive({
 
 const store = useStore()
 const timeout = ref(0)
-window.addEventListener('resize', () => {
-  if (!timeout.value) {
-    timeout.value = setTimeout(() => {
-      store.dispatch('actSetDeviceMode', detectIsMobile())
-      timeout.value = 0
-    }, 100)
-  }
-})
+// window.addEventListener('resize', () => {
+//   if (!timeout.value) {
+//     timeout.value = setTimeout(() => {
+//       store.dispatch('actSetDeviceMode', detectIsMobile())
+//       timeout.value = 0
+//     }, 100)
+//   }
+// })
 </script>
 <style lang="sass">
 @import '@/scss/main.scss'

@@ -7,10 +7,10 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "pixi.js": "^5.0.4",
     "axios": "^0.21.1",
     "gsap": "^3.6.1",
     "phy-touch": "^0.1.1",
-    "pixi.js": "^6.0.0",
     "pug": "^3.0.2",
     "vue": "^3.0.5",
     "vue-router": "^4.0.5",
