@@ -13,7 +13,7 @@ import { TweenMax, TimelineMax } from 'gsap'
 
 export default defineComponent({
   setup () {
-    const story = ref(null)
+    const story = ref()
     const material = ['meats.png', 'ingredient1.png', 'ingredient2.png', ...new Array(6).fill(1).map((v, i) => `step${v + i}.png`)]
     const imgs = material.map(str => `/src/assets/images/recipe1/${str}`)
     var phytouch = null
@@ -114,7 +114,11 @@ export default defineComponent({
           //         }
           //       }
           //     })
+          console.log('---------1')
+          console.log(story)
           if (story.value) {
+            console.log('---------2')
+            console.log(story.value)
             const element: HTMLDivElement = story.value!
             element.appendChild(app.view)
           }
@@ -123,7 +127,7 @@ export default defineComponent({
     
     })
     // return { story }
-    return {}
+    return { story }
   }
 })
 </script>
