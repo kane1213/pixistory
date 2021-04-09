@@ -35,7 +35,7 @@ export default defineComponent({
       ? 1
       : Array.isArray(route.params.id)
         ? parseInt(route.params.id.join(''))
-        : 1
+        : parseInt(route.params.id)
     const recipe:RecipeData = recipes.find(item => item.id === recipeId) || { id: 1, name: 'none', images: [] }
     onMounted(() => {
       const mayLayout = document.getElementById('mainLayout')!
