@@ -1,8 +1,8 @@
 <template lang="pug">
 .home
-  .item(v-for="item in items" :key="item.text" @click.stop="routerTo(item.path)")
+  .item(v-for="item in items" :key="item.id" @click.stop="routerTo(item)")
     img(:src="item.img")
-    .itemLabel {{ item.text }}
+    .itemLabel {{ item.name }}
 </template>
 
 
@@ -11,17 +11,29 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineComponent } from 'vue'
+import recipes from '../Story/recipes'
+interface Recipe {
+  text: string
+  path: string
+  id: number
+  img: string
+}
 export default defineComponent({
   setup () {
-    const items = ref([
-      { text: 'ローストビーフ', path: 'Story', img: '/recipe1/meats.png' },
-      { text: 'ローストビーフ', path: 'Story', img: '/recipe1/meats.png' },
-      { text: 'ローストビーフ', path: 'Story', img: '/recipe1/meats.png' },
-      { text: 'ローストビーフ', path: 'Story', img: '/recipe1/meats.png' }
-    ])
+    // const items = ref([
+    //   { text: 'ローストビーフ', path: 'Story', id: 1, img: '/recipe1/meats.png' },
+    //   { text: 'じゃがいものピュレ', path: 'Story', id: 2, img: '/recipe2/meats.png' },
+    // ])
+    const items = recipes.map(item => ({
+      id: item.id,
+      name: item.name,
+      img: item.images[0]
+    }))
+
+
     const router = useRouter()
-    function routerTo (name: string): void {
-      router.push({ name })
+    function routerTo (item: Recipe): void {
+      router.push({ path: `/${item.path}/${item.id}` })
     }
     return { items, routerTo }
   }

@@ -9,16 +9,27 @@ import { ref, onMounted } from 'vue'
 import * as PIXI from 'pixi.js'
 import PhyTouch from 'phy-touch'
 import { TweenMax, TimelineMax } from 'gsap'
+import { useRoute } from 'vue-router'
+import recipes from './recipes'
+
+export interface RecipeData {
+  id: number
+  name: string
+  images: string[]
+}
 
 
 export default defineComponent({
   setup () {
+    const route = useRoute()
     const story = ref()
-    // console.log(imgs)
-    const imgs = ['meats.png', 'ingredient1.png', 'ingredient2.png', ...new Array(6).fill(1).map((v, i) => `step${v + i}.png`)]
-      .map(str => `/recipe1/${str}`)
     var phytouch = null
-    
+    const recipeList: RecipeData[] = recipes
+    const recipeId: number = route.params && route.params.id
+      ? parseInt(route.params.id)
+      : 1
+    const recipe:RecipeData = recipes.find(item => item.id === recipeId) || { id: 1, name: 'none', images: [] }
+
     onMounted(() => {
       const mayLayout = document.getElementById('mainLayout')!
       const { clientWidth, clientHeight } = mayLayout
@@ -29,17 +40,16 @@ export default defineComponent({
       });
       const senceOne = new PIXI.Container()
       app.stage.addChild(senceOne)
-
       // app.loader.onProgress
       //   .add((event)=>{
       //     console.log(event.progress)
       //   })
       const max = 2000
       app.loader
-        .add(imgs)
+        .add(recipe.images)
         .load((loader, resources) => {
-          const _sprites: PIXI.Sprite[] = imgs.map((path:any):PIXI.Sprite => PIXI.Sprite.from(path))
-          const _meatText = new PIXI.Text('ローストビーフ',{fontSize: 32, fill : 0xff1010, align : 'center'})
+          const _sprites: PIXI.Sprite[] = recipe.images.map((path:any):PIXI.Sprite => PIXI.Sprite.from(path))
+          const _meatText = new PIXI.Text(recipe.name,{fontSize: 32, fill : 0xff1010, align : 'center'})
           const { width: appWidth, height: appHeight } = app.renderer
           _sprites.forEach((sprite,idx) => {
             senceOne.addChild(sprite)

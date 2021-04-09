@@ -24,7 +24,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/About/index.vue')
   },
   {
-    path: '/story',
+    path: '/story/:id',
     name: 'Story',
     meta: {
       title: 'story page',
