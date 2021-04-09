@@ -1,11 +1,12 @@
 <template lang="pug">
 #story(ref="story")
+.loading(v-if="loading.show") {{ loading.percentage }}
 </template>
 
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { ref, onMounted } from 'vue'
+import { computed, defineComponent } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import * as PIXI from 'pixi.js'
 import PhyTouch from 'phy-touch'
 import { TweenMax, TimelineMax } from 'gsap'
@@ -21,6 +22,11 @@ export interface RecipeData {
 
 export default defineComponent({
   setup () {
+    const loading = reactive({
+      show: true,
+      num: 0,
+      percentage: computed(() => `${loading.num}%`)
+    })
     const route = useRoute()
     const story = ref()
     var phytouch = null
@@ -31,7 +37,6 @@ export default defineComponent({
         ? parseInt(route.params.id.join(''))
         : 1
     const recipe:RecipeData = recipes.find(item => item.id === recipeId) || { id: 1, name: 'none', images: [] }
-
     onMounted(() => {
       const mayLayout = document.getElementById('mainLayout')!
       const { clientWidth, clientHeight } = mayLayout
@@ -42,14 +47,15 @@ export default defineComponent({
       });
       const senceOne = new PIXI.Container()
       app.stage.addChild(senceOne)
-      // app.loader.onProgress
-      //   .add((event)=>{
-      //     console.log(event.progress)
-      //   })
+      app.loader.onProgress
+        .add((event)=>{
+          loading.num = event.progress
+        })
       const max = 2000
       app.loader
         .add(recipe.images)
         .load((loader, resources) => {
+          loading.show = false
           const _sprites: PIXI.Sprite[] = recipe.images.map((path:any):PIXI.Sprite => PIXI.Sprite.from(path))
           const _meatText = new PIXI.Text(recipe.name,{fontSize: 32, fill : 0xff1010, align : 'center'})
           const { width: appWidth, height: appHeight } = app.renderer
@@ -135,7 +141,7 @@ export default defineComponent({
     
     })
     // return { story }
-    return { story }
+    return { story, loading }
   }
 })
 </script>
@@ -143,4 +149,10 @@ export default defineComponent({
 <style scoped lang="sass">
 #story
   background: transparent url('/src/assets/images/bgrounds/page_bg.jpg') repeat left top
+.loading
+  @apply fixed rounded-lg text-black py-2 px-4
+  left: 50%
+  top: 50%
+  background-color: rgba(255, 255, 255, .85)
+  transform: translate(-50%, -50%)
 </style>
