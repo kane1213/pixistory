@@ -25,7 +25,7 @@ export default defineComponent({
     const loading = reactive({
       show: true,
       num: 0,
-      percentage: computed(() => `${loading.num}%`)
+      percentage: computed(() => `${Math.floor(loading.num)}%`)
     })
     const route = useRoute()
     const story = ref()

@@ -1,6 +1,6 @@
 <template lang="pug">
 .default
-  .header.bg-gray-900.text-white.py-1.px-2.flex.justify-between
+  .header
     .brand Dk&Sakura
     .links
       router-link.mr-2(to="/home") Home
@@ -20,6 +20,8 @@ const themeColor = reactive({
 })
 </script>
 <style lang="sass">
+.header
+  @apply bg-blue-300 text-white py-1 px-2 flex justify-between
 .default
   @apply flex flex-col h-screen
 </style>
