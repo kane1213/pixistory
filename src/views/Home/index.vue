@@ -1,7 +1,7 @@
 <template lang="pug">
-.p-3
+.home
   .item(v-for="item in items" :key="item.text" @click.stop="routerTo(item.path)")
-    img(src="/public/recipe1/meats.png")
+    img(:src="item.img")
     .itemLabel {{ item.text }}
 </template>
 
@@ -13,24 +13,25 @@ import { useRouter } from 'vue-router'
 import { defineComponent } from 'vue'
 export default defineComponent({
   setup () {
-    const items = ref([{ text: 'ローストビーフ', path: 'Story' }])
+    const items = ref([
+      { text: 'ローストビーフ', path: 'Story', img: '/recipe1/meats.png' },
+      { text: 'ローストビーフ', path: 'Story', img: '/recipe1/meats.png' },
+      { text: 'ローストビーフ', path: 'Story', img: '/recipe1/meats.png' },
+      { text: 'ローストビーフ', path: 'Story', img: '/recipe1/meats.png' }
+    ])
     const router = useRouter()
     function routerTo (name: string): void {
       router.push({ name })
     }
     return { items, routerTo }
   }
-
-  // import ajax from "/src/utils/ajax";
-  // ajax({url: "/product/items ",method: "get"})
-  //   .then((res)=>{
-  //     console.log(res)
-  //   })
 })
 
 </script>
 
 <style scoped lang="sass">
+  .home
+    @apply p-3 mx-auto container grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-2
   .item
     @apply rounded-lg bg-gray-100 shadow-md
   .itemLabel

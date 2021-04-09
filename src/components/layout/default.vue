@@ -1,7 +1,7 @@
 <template lang="pug">
 .default
   .header.bg-gray-900.text-white.py-1.px-2.flex.justify-between
-    .brand BRAND
+    .brand Dk&Sakura
     .links
       router-link.mr-2(to="/home") Home
       router-link.mr-2(to="/about") About
