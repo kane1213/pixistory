@@ -25,9 +25,11 @@ export default defineComponent({
     const story = ref()
     var phytouch = null
     const recipeList: RecipeData[] = recipes
-    const recipeId: number = route.params && route.params.id
-      ? parseInt(route.params.id)
-      : 1
+    const recipeId: number = !route.params || !route.params.id
+      ? 1
+      : Array.isArray(route.params.id)
+        ? parseInt(route.params.id.join(''))
+        : 1
     const recipe:RecipeData = recipes.find(item => item.id === recipeId) || { id: 1, name: 'none', images: [] }
 
     onMounted(() => {

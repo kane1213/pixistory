@@ -13,8 +13,8 @@ import { useRouter } from 'vue-router'
 import { defineComponent } from 'vue'
 import recipes from '../Story/recipes'
 interface Recipe {
-  text: string
-  path: string
+  name: string
+  compName: string
   id: number
   img: string
 }
@@ -27,13 +27,15 @@ export default defineComponent({
     const items = recipes.map(item => ({
       id: item.id,
       name: item.name,
-      img: item.images[0]
+      img: item.images[0],
+      compName: 'Story'
     }))
 
 
     const router = useRouter()
     function routerTo (item: Recipe): void {
-      router.push({ path: `/${item.path}/${item.id}` })
+      // router.push({ path: `/${item.path}/${item.id}` })
+      router.push({ name: item.compName, params: { id: item.id } })
     }
     return { items, routerTo }
   }
