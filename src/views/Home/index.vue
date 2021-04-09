@@ -1,7 +1,7 @@
 <template lang="pug">
 .p-3
   .item(v-for="item in items" :key="item.text" @click.stop="routerTo(item.path)")
-    img(:src="meats")
+    img(src="/public/recipe1/meats.png")
     .itemLabel {{ item.text }}
 </template>
 
@@ -11,16 +11,14 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineComponent } from 'vue'
-import meatImg from '/src/assets/images/recipe1/meats.png'
 export default defineComponent({
   setup () {
     const items = ref([{ text: 'ローストビーフ', path: 'Story' }])
-    const meats = meatImg
     const router = useRouter()
     function routerTo (name: string): void {
       router.push({ name })
     }
-    return { items, meats, routerTo }
+    return { items, routerTo }
   }
 
   // import ajax from "/src/utils/ajax";
