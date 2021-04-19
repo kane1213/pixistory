@@ -51,7 +51,7 @@ export default defineComponent({
         .add((event)=>{
           loading.num = event.progress
         })
-      const max = 2000
+      const max = recipe.images.length * 500
       app.loader
         .add(recipe.images)
         .load((loader, resources) => {
