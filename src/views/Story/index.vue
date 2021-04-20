@@ -75,7 +75,7 @@ export default defineComponent({
           _meatText.x = app.renderer.width - 15
           _meatText.y = app.renderer.height * .5
           _meatText.alpha = 0
-          _meatText.anchor.x = 1      
+          _meatText.anchor.x = 1
           senceOne.addChild(_meatText)
           
           let _delay = 0
@@ -84,7 +84,7 @@ export default defineComponent({
           const timelines = new Array(2).fill('').map((v, i) => new TimelineMax({delay: (_delay++) * stepDelay}))
 
           // timelines[0].add(new TweenMax(_sprites[0], stepDelay, { alpha: 1, y: app.renderer.height * .5 }), 0)
-          timelines[0].add(new TweenMax(_meatText, stepDelay, { alpha: 1, y: appHeight * .75 }), 0)
+          timelines[0].add(new TweenMax(_meatText, stepDelay * .5, { alpha: 1, y: (appHeight + _sprites[0].height) * .5 }), 0)
           timelines[1].add(new TweenMax([_sprites[0], _meatText], stepDelay, { alpha: 0, y: appHeight }), 0)
           _sprites.slice(1, _sprites.length).forEach((sprite,sidx) => {
             const _timeline1 = new TimelineMax({delay: (_delay++) * stepDelay})
