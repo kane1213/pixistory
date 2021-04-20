@@ -46,12 +46,13 @@ export default defineComponent({
         transparent: true
       });
       const senceOne = new PIXI.Container()
+      const senceContainers: PIXI.Container[] = []
       app.stage.addChild(senceOne)
       app.loader.onProgress
         .add((event)=>{
           loading.num = event.progress
         })
-      const max = recipe.images.length * 500
+      const max = (recipe.images.length - 6) * 500
       app.loader
         .add(recipe.images)
         .load((loader, resources) => {
@@ -59,28 +60,48 @@ export default defineComponent({
           const _sprites: PIXI.Sprite[] = recipe.images.map((path:any):PIXI.Sprite => PIXI.Sprite.from(path))
           const _meatText = new PIXI.Text(recipe.name,{fontSize: 32, fill : 0xff1010, align : 'center'})
           const { width: appWidth, height: appHeight } = app.renderer
-          _sprites.slice(0, 3).forEach((sprite,idx) => {
-            senceOne.addChild(sprite)
-            if (idx > 0) {
+          _sprites.forEach((sprite,idx) => {
+
+            let lastContainer: PIXI.Container
+            if (idx < 3) {
+              senceOne.addChild(sprite)
+            } else {
+              if (idx % 2 === 1) { 
+                senceContainers.push(new PIXI.Container())
+                app.stage.addChild(senceContainers.slice(-1)[0])
+              }
+              lastContainer = senceContainers.slice(-1)[0]
+              lastContainer.addChild(sprite)
+            }
+            if (idx > 0 && idx < 3) {
               sprite.alpha = 0
               sprite.y = appHeight
-            } else {
+              sprite.anchor.x = sprite.anchor.y = .5
+            } else if (idx > 3) {
+              if (lastContainer!) {
+                sprite.y = idx % 2 === 0
+                  ? _sprites[idx - 1].height * 1.5
+                  : 0
+
+                if (idx % 2 === 0) {
+                  sprite.alpha = 0
+                }
+
+                if (idx % 2 === 0) {
+                  lastContainer.y = appHeight + lastContainer.height * .85
+                  lastContainer.pivot.x = lastContainer.width * .25
+                  lastContainer.pivot.y = appHeight *.25
+                }
+
+              }
+            } else if (idx === 0) {
               sprite.y = appHeight * .5
+              sprite.anchor.x = sprite.anchor.y = .5
             }
             if (sprite.width > appWidth) sprite.scale.x = sprite.scale.y = appWidth / sprite.width
-            sprite.anchor.x = sprite.anchor.y = .5
+            
             sprite.x = appWidth * .5
           })
-
-          // _sprites.slice(3).reduce((acc, spr, idx) => {
-          //   if (idx % 2 === 0) {
-          //     acc.push([]: PIXI.Sprite[])
-              
-          //   }
-          //   let lastGroup = acc.slice(-1)[0]
-          //   lastGroup = lastGroup.concat(spr)
-          //   return acc
-          // }, []: PIXI.Sprite[])
 
           _meatText.x = app.renderer.width - 15
           _meatText.y = app.renderer.height * .5
@@ -96,18 +117,39 @@ export default defineComponent({
           // timelines[0].add(new TweenMax(_sprites[0], stepDelay, { alpha: 1, y: app.renderer.height * .5 }), 0)
           timelines[0].add(new TweenMax(_meatText, stepDelay * .5, { alpha: 1, y: (appHeight + _sprites[0].height) * .5 }), 0)
           timelines[1].add(new TweenMax([_sprites[0], _meatText], stepDelay, { alpha: 0, y: appHeight }), 0)
-          _sprites.slice(1, 3).forEach((sprite,sidx) => {
+          
+          
+          senceContainers.forEach((container, cidx) => {
             const _timeline1 = new TimelineMax({delay: (_delay++) * stepDelay})
             timelines.push(_timeline1)
-            _timeline1.add(new TweenMax(sprite, stepDelay * .6, { y: appHeight * .5, alpha: 1 }), 0)
-            if (sidx < _sprites.length - 2) {
+            _timeline1.add(new TweenMax(container, stepDelay * .6, { y: appHeight * .5 }), 0)
+
+            const _timelineSpr = new TimelineMax({delay: (_delay++) * stepDelay})
+            timelines.push(_timelineSpr)
+            _timelineSpr.add(new TweenMax(container.children[1], stepDelay * .6, { alpha: 1, y: container.children[0]['height'] }), 0)
+
+            if (cidx < senceContainers.length - 1) {
               const _timeline2 = new TimelineMax({delay: (_delay++) * stepDelay})
               timelines.push(_timeline2)
-              _timeline2.add(new TweenMax(sprite, stepDelay, { y: 0, alpha: 0 }), 0)
+              _timeline2.add(new TweenMax(container, stepDelay, { y: 0, alpha: 0 }), 0)
             }
-          })
 
-          _sprites.
+            
+          })
+          
+          
+          
+          // _sprites.slice(1, _sprites.length).forEach((sprite,sidx) => {
+          //   const _timeline1 = new TimelineMax({delay: (_delay++) * stepDelay})
+          //   timelines.push(_timeline1)
+          //   _timeline1.add(new TweenMax(sprite, stepDelay * .6, { y: appHeight * .5, alpha: 1 }), 0)
+
+          //   if (sidx < _sprites.length - 2) {
+          //     const _timeline2 = new TimelineMax({delay: (_delay++) * stepDelay})
+          //     timelines.push(_timeline2)
+          //     _timeline2.add(new TweenMax(sprite, stepDelay, { y: 0, alpha: 0 }), 0)
+          //   }
+          // })
 
           timelines.forEach(_time => {
             allTimeLine.add(_time, 0)
