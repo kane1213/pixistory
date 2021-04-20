@@ -59,7 +59,7 @@ export default defineComponent({
           const _sprites: PIXI.Sprite[] = recipe.images.map((path:any):PIXI.Sprite => PIXI.Sprite.from(path))
           const _meatText = new PIXI.Text(recipe.name,{fontSize: 32, fill : 0xff1010, align : 'center'})
           const { width: appWidth, height: appHeight } = app.renderer
-          _sprites.forEach((sprite,idx) => {
+          _sprites.slice(0, 3).forEach((sprite,idx) => {
             senceOne.addChild(sprite)
             if (idx > 0) {
               sprite.alpha = 0
@@ -71,6 +71,16 @@ export default defineComponent({
             sprite.anchor.x = sprite.anchor.y = .5
             sprite.x = appWidth * .5
           })
+
+          // _sprites.slice(3).reduce((acc, spr, idx) => {
+          //   if (idx % 2 === 0) {
+          //     acc.push([]: PIXI.Sprite[])
+              
+          //   }
+          //   let lastGroup = acc.slice(-1)[0]
+          //   lastGroup = lastGroup.concat(spr)
+          //   return acc
+          // }, []: PIXI.Sprite[])
 
           _meatText.x = app.renderer.width - 15
           _meatText.y = app.renderer.height * .5
@@ -86,17 +96,18 @@ export default defineComponent({
           // timelines[0].add(new TweenMax(_sprites[0], stepDelay, { alpha: 1, y: app.renderer.height * .5 }), 0)
           timelines[0].add(new TweenMax(_meatText, stepDelay * .5, { alpha: 1, y: (appHeight + _sprites[0].height) * .5 }), 0)
           timelines[1].add(new TweenMax([_sprites[0], _meatText], stepDelay, { alpha: 0, y: appHeight }), 0)
-          _sprites.slice(1, _sprites.length).forEach((sprite,sidx) => {
+          _sprites.slice(1, 3).forEach((sprite,sidx) => {
             const _timeline1 = new TimelineMax({delay: (_delay++) * stepDelay})
             timelines.push(_timeline1)
             _timeline1.add(new TweenMax(sprite, stepDelay * .6, { y: appHeight * .5, alpha: 1 }), 0)
-
             if (sidx < _sprites.length - 2) {
               const _timeline2 = new TimelineMax({delay: (_delay++) * stepDelay})
               timelines.push(_timeline2)
               _timeline2.add(new TweenMax(sprite, stepDelay, { y: 0, alpha: 0 }), 0)
             }
           })
+
+          _sprites.
 
           timelines.forEach(_time => {
             allTimeLine.add(_time, 0)
