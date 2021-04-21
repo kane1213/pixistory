@@ -80,7 +80,7 @@ export default defineComponent({
             } else if (idx > 3) {
               if (lastContainer!) {
                 sprite.y = idx % 2 === 0
-                  ? _sprites[idx - 1].height * 1.5
+                  ? _sprites[idx - 1].height
                   : 0
 
                 if (idx % 2 === 0) {
@@ -90,7 +90,8 @@ export default defineComponent({
                 if (idx % 2 === 0) {
                   lastContainer.y = appHeight + lastContainer.height * .85
                   lastContainer.pivot.x = lastContainer.width * .25
-                  lastContainer.pivot.y = appHeight *.25
+                  lastContainer.pivot.y = lastContainer.height *.5
+                  sprite.y = _sprites[idx - 1].height * 2
                 }
 
               }
