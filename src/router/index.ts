@@ -31,6 +31,15 @@ const routes: Array<RouteRecordRaw> = [
       keepAlive: true
     },
     component: () => import('../views/Story/index.vue')
+  },
+  {
+    path: '/roulette',
+    name: 'Roulette',
+    meta: {
+      title: 'roulette page',
+      keepAlive: true
+    },
+    component: () => import('../views/Roulette/index.vue')
   }
 ]
 

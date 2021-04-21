@@ -5,8 +5,7 @@
 
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
-import { ref, reactive, onMounted } from 'vue'
+import { computed, defineComponent, ref, reactive, onMounted } from 'vue'
 import * as PIXI from 'pixi.js'
 import PhyTouch from 'phy-touch'
 import { TweenMax, TimelineMax } from 'gsap'
