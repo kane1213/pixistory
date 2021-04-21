@@ -20,10 +20,6 @@ interface Recipe {
 }
 export default defineComponent({
   setup () {
-    // const items = ref([
-    //   { text: 'ローストビーフ', path: 'Story', id: 1, img: '/recipe1/meats.png' },
-    //   { text: 'じゃがいものピュレ', path: 'Story', id: 2, img: '/recipe2/meats.png' },
-    // ])
     const items = recipes.map(item => ({
       id: item.id,
       name: item.name,
@@ -45,7 +41,7 @@ export default defineComponent({
 
 <style scoped lang="sass">
   .home
-    @apply p-3 mx-auto container grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-2
+    @apply p-3 mx-auto container grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-2
   .item
     @apply rounded-lg bg-gray-100 shadow-md
   .itemLabel
