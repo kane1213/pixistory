@@ -4,7 +4,7 @@
 <script lang="ts">
 import { computed, defineComponent, ref, reactive, onMounted } from 'vue'
 import * as PIXI from 'pixi.js'
-import { TweenMax, TimelineMax, Linear, Elastic } from 'gsap'
+import { TweenMax, TimelineMax, Linear, Strong } from 'gsap'
 
 export default defineComponent({
   setup () {
@@ -48,13 +48,14 @@ export default defineComponent({
 
       const loop = new TweenMax(senceOne, 5, { rotation: arcAngle * (num), ease: Linear.easeNone })
 
-      const lottery = new TweenMax(senceOne, 3, { rotation: arcAngle * (num * 2 + 1.312), ease: Elastic.easeIn })
+      const lottery = new TweenMax(senceOne, 10, { rotation: arcAngle * (num * 8 + 1.312), ease: Linear.easeIn })
 
       const allTimeLine = new TimelineMax({ repeat: -1 })
       allTimeLine.add(loop)
-      allTimeLine.play()
+      allTimeLine.add(lottery)
+      allTimeLine.play(1)
 
-      senceOne.interactive = true
+      senceOne.interactive = senceOne.buttonMode = true
       senceOne.addListener('click', function () {
         if (allTimeLine.isActive()) {
           allTimeLine.pause()
