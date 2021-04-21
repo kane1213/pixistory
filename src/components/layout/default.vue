@@ -6,7 +6,7 @@
       router-link.mr-2(to="/home") Home
       router-link.mr-2(to="/about") About
       router-link(to="/story") Story
-  #mainLayout.flex-1
+  #mainLayout
     slot
   footerComp
 </template>
@@ -24,4 +24,6 @@ const themeColor = reactive({
   @apply bg-blue-300 text-white py-1 px-2 flex justify-between
 .default
   @apply flex flex-col h-screen
+#mainLayout
+  @apply max-w-xl flex-1 mx-auto w-full border
 </style>
