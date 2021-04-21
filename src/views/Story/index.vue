@@ -76,6 +76,7 @@ export default defineComponent({
             if (idx > 0 && idx < 3) {
               sprite.alpha = 0
               sprite.y = appHeight
+              sprite.x = appWidth * .5
               sprite.anchor.x = sprite.anchor.y = .5
             } else if (idx > 3) {
               if (lastContainer!) {
@@ -89,19 +90,23 @@ export default defineComponent({
 
                 if (idx % 2 === 0) {
                   lastContainer.y = appHeight + lastContainer.height * .85
-                  lastContainer.pivot.x = lastContainer.width * .25
+                  lastContainer.x = appWidth * .5
+                  lastContainer.pivot.x = lastContainer.width * .5
                   lastContainer.pivot.y = lastContainer.height *.5
                   sprite.y = _sprites[idx - 1].height * 2
+                } else {
+                  // sprite.anchor.x = .5
                 }
 
               }
             } else if (idx === 0) {
               sprite.y = appHeight * .5
+              sprite.x = appWidth * .5
               sprite.anchor.x = sprite.anchor.y = .5
             }
             if (sprite.width > appWidth) sprite.scale.x = sprite.scale.y = appWidth / sprite.width
             
-            sprite.x = appWidth * .5
+            
           })
 
           _meatText.x = app.renderer.width - 15
