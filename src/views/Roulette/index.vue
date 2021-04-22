@@ -37,25 +37,33 @@ export default defineComponent({
       const num = rouletteSecs.reduce((acc, sec):number => acc + sec.occupy ,0)
       
       const arcAngle = Math.PI / (num / 2)
-      const startAngle = arcAngle * 1
+      // const startAngle = arcAngle * 1
       const outsideRadius = clientWidth * .5
       const insideRadius = 50
       const position = 0
       const colors = generateColors(num)
       let accumAngle = 0
       rouletteSecs.forEach((sec, idx) => {
+        
         const _container: PIXI.Container = new PIXI.Container()
         const _graphics: PIXI.Graphics = new PIXI.Graphics()
+        const _text: PIXI.Text = new PIXI.Text(`${idx + 1}`)
         accumAngle += idx > 0
           ? rouletteSecs[idx - 1].occupy
           : 0
         sec.accum = accumAngle
         _graphics.beginFill(colors[idx])
-        _graphics.arc(position, position, outsideRadius, 0, arcAngle * sec.occupy, false)
-        _graphics.arc(position, position, insideRadius, arcAngle * sec.occupy, 0, true)
+        const selfAngle = (arcAngle * sec.occupy / 2) 
+        const base = Math.PI / 180 * 90
+        _graphics.arc(position, position, outsideRadius, -selfAngle - base, selfAngle - base, false)
+        _graphics.arc(position, position, insideRadius, selfAngle - base, -selfAngle - base, true)
         _graphics.endFill()
+        _text.anchor.x = _text.anchor.y = .5
+        _text.y = -120
         _container.addChild(_graphics)
-        _container.rotation = Math.PI / 180 * (360 / num * accumAngle)
+        _container.addChild(_text)
+        const oldAcc = accumAngle - sec.occupy
+      _container.rotation = Math.PI / 180 * (360 / num * (accumAngle / 2 + (idx > 0 ? oldAcc * .5 - sec.occupy:0)))
         roulette.addChild(_container)
       })
 
@@ -74,7 +82,6 @@ export default defineComponent({
       // allTimeLine.add(loop)
       // allTimeLine.add(lottery)
       // allTimeLine.play(1)
-
       roulette.interactive = roulette.buttonMode = true
       roulette.addListener('click', function () {
         if (!allTimeLine.isActive()) {
@@ -83,17 +90,21 @@ export default defineComponent({
           // allTimeLine._repeat = 0
           // allTimeLine.resume()
           // const prizeSec: RoulettePrize = rouletteSecs[Math.floor(Math.random() * rouletteSecs.length)]
-          roulette.rotation = roulette.rotation % 360
+          // roulette.rotation = roulette.rotation % 360
           const _children = allTimeLine.getChildren()
           _children.forEach(child => {
             allTimeLine.remove(child)
           })
+
+          allTimeLine.clear()
           const prize: number = Math.floor(Math.random() * rouletteSecs.length)
           const { occupy, accum } = rouletteSecs[prize]
           const half = 360 / num * occupy * (Math.random() * .95)
           const accums = 360 / num * accum
-          console.log(roulette.rotation)
-          allTimeLine.add(new TweenMax(roulette, 3, { rotation: Math.PI / 180 * ((360 * 10) -90 - half - accums ), ease: Linear.easeIn }))
+
+          const lottery = new TweenMax(roulette, 1, { rotation: Math.PI / 180 * (360 * 3 -90 - half - accums ), ease: Linear.easeIn })
+          allTimeLine.add(lottery)
+          roulette.rotation = 0
           allTimeLine.play()
         } else {
           
