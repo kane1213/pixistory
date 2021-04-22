@@ -7,17 +7,21 @@ import * as PIXI from 'pixi.js'
 import { TweenMax, TimelineMax, Linear, Strong } from 'gsap'
 interface RoulettePrize {
   label: string,
-  occupy: number
+  occupy: number,
+  accum: number
 }
 export default defineComponent({
   setup () {
     const rouletteDom = ref()
     const generateColors = (num: Number): number[] => new Array(num).fill(0).map(() => Math.floor(Math.random()*16777215))
     const rouletteSecs: RoulettePrize[] = [
-      { label: 'prizeOne', occupy: 1 },
-      { label: 'prizeTwo', occupy: 4 },
-      { label: 'prizeThree', occupy: 1 },
-      { label: 'prizeFour', occupy: 2 },
+      { label: 'prizeOne', occupy: 4, accum: 0 },
+      { label: 'prizeTwo', occupy: 1, accum: 0 },
+      { label: 'prizeThree', occupy: 1, accum: 0 },
+      { label: 'prizeFour', occupy: 2, accum: 0 },
+      { label: 'prizeFive', occupy: 3, accum: 0 },
+      { label: 'prizeSix', occupy: 2, accum: 0 },
+      { label: 'prizeSeven', occupy: 1, accum: 0 },
     ]
     onMounted(() => {
       // const containers: PIXI.Container[] = []
@@ -34,42 +38,27 @@ export default defineComponent({
       
       const arcAngle = Math.PI / (num / 2)
       const startAngle = arcAngle * 1
-      const outsideRadius = 30 // clientWidth * .5
-      const insideRadius = 2
+      const outsideRadius = clientWidth * .5
+      const insideRadius = 50
       const position = 0
       const colors = generateColors(num)
-
+      let accumAngle = 0
       rouletteSecs.forEach((sec, idx) => {
         const _container: PIXI.Container = new PIXI.Container()
         const _graphics: PIXI.Graphics = new PIXI.Graphics()
-        const _previous: number = idx > 0
+        accumAngle += idx > 0
           ? rouletteSecs[idx - 1].occupy
           : 0
+        sec.accum = accumAngle
         _graphics.beginFill(colors[idx])
         _graphics.arc(position, position, outsideRadius, 0, arcAngle * sec.occupy, false)
         _graphics.arc(position, position, insideRadius, arcAngle * sec.occupy, 0, true)
         _graphics.endFill()
         _container.addChild(_graphics)
-        _container.rotation = Math.PI / 180 * (360 / num * sec.occupy)
+        _container.rotation = Math.PI / 180 * (360 / num * accumAngle)
         roulette.addChild(_container)
       })
 
-      // for (let i = 0; i < num; i++) {
-      //   const _container = new PIXI.Container()
-      //   // containers.push(_container)
-      //   const _graphics = new PIXI.Graphics();
-      //   // let angle = startAngle + i * arcAngle
-      //   let angle = Math.PI / 180 * (-90 - (360 / num / 2))
-      //   _graphics.beginFill(colors[i])
-      //   _graphics.arc(position, position, outsideRadius, angle, angle + arcAngle, false)
-      //   _graphics.arc(position, position, insideRadius, angle + arcAngle, angle, true)
-      //   _graphics.endFill()
-      //   _container.addChild(_graphics)
-      //   _container.rotation = Math.PI / 180 * (360 / num * i)
-        
-      //   roulette.addChild(_container)
-      // }
-      
       roulette.x = clientWidth * .5
       roulette.y = clientHeight * .5
       if (rouletteDom.value) {
@@ -93,7 +82,12 @@ export default defineComponent({
           // allTimeLine.remove(loop)
           // allTimeLine._repeat = 0
           // allTimeLine.resume()
-          allTimeLine.add(new TweenMax(roulette, 5, { rotation: Math.PI / 180 * 360, ease: Linear.easeIn }))
+          // const prizeSec: RoulettePrize = rouletteSecs[Math.floor(Math.random() * rouletteSecs.length)]
+          const prize: number = Math.floor(Math.random() * rouletteSecs.length)
+          const { occupy, accum } = rouletteSecs[prize]
+          const half = 360 / num * occupy * (Math.random() * .95)
+          const accums = 360 / num * accum
+          allTimeLine.add(new TweenMax(roulette, 6, { rotation: Math.PI / 180 * ((360 * 10) -90 - half - accums ), ease: Linear.easeIn }))
           allTimeLine.play()
         } else {
           
