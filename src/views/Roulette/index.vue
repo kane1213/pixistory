@@ -83,11 +83,17 @@ export default defineComponent({
           // allTimeLine._repeat = 0
           // allTimeLine.resume()
           // const prizeSec: RoulettePrize = rouletteSecs[Math.floor(Math.random() * rouletteSecs.length)]
+          roulette.rotation = roulette.rotation % 360
+          const _children = allTimeLine.getChildren()
+          _children.forEach(child => {
+            allTimeLine.remove(child)
+          })
           const prize: number = Math.floor(Math.random() * rouletteSecs.length)
           const { occupy, accum } = rouletteSecs[prize]
           const half = 360 / num * occupy * (Math.random() * .95)
           const accums = 360 / num * accum
-          allTimeLine.add(new TweenMax(roulette, 6, { rotation: Math.PI / 180 * ((360 * 10) -90 - half - accums ), ease: Linear.easeIn }))
+          console.log(roulette.rotation)
+          allTimeLine.add(new TweenMax(roulette, 3, { rotation: Math.PI / 180 * ((360 * 10) -90 - half - accums ), ease: Linear.easeIn }))
           allTimeLine.play()
         } else {
           
