@@ -22,7 +22,7 @@ export default defineComponent({
       });
       const senceOne = new PIXI.Container()
       app.stage.addChild(senceOne)
-      const num = 8
+      const num = 4
       
       const graphics = new PIXI.Graphics();
       const arcAngle = Math.PI / (num / 2)
@@ -32,7 +32,8 @@ export default defineComponent({
       const position = 0
       const colors = generateColors(num)
       for (let i = 0; i < num; i++) {
-        let angle = startAngle + i * arcAngle
+        // let angle = startAngle + i * arcAngle
+        let angle = Math.PI / 180 * (-90 - (360 / num / 2))
         graphics.beginFill(colors[i])
         graphics.arc(position, position, outsideRadius, angle, angle + arcAngle, false)
         graphics.arc(position, position, insideRadius, angle + arcAngle, angle, true)
@@ -46,23 +47,23 @@ export default defineComponent({
         element.appendChild(app.view)
       }
 
-      const loop = new TweenMax(senceOne, 5, { rotation: arcAngle * (num), ease: Linear.easeNone })
+      // const loop = new TweenMax(senceOne, 5, { rotation: arcAngle * (num), ease: Linear.easeNone })
 
-      const lottery = new TweenMax(senceOne, 10, { rotation: arcAngle * (num * 8 + 1.312), ease: Linear.easeIn })
+      // const lottery = new TweenMax(senceOne, 5, { rotation: Math.PI / 180 * 360, ease: Linear.easeIn })
 
-      const allTimeLine = new TimelineMax({ repeat: -1 })
-      allTimeLine.add(loop)
-      allTimeLine.add(lottery)
-      allTimeLine.play(1)
+       const allTimeLine = new TimelineMax()  // { repeat: -1 }
+      // allTimeLine.add(loop)
+      // allTimeLine.add(lottery)
+      // allTimeLine.play(1)
 
       senceOne.interactive = senceOne.buttonMode = true
       senceOne.addListener('click', function () {
-        if (allTimeLine.isActive()) {
-          allTimeLine.pause()
-          allTimeLine.remove(loop)
-          allTimeLine._repeat = 0
-          allTimeLine.resume()
-          allTimeLine.add(lottery)
+        if (!allTimeLine.isActive()) {
+          // allTimeLine.pause()
+          // allTimeLine.remove(loop)
+          // allTimeLine._repeat = 0
+          // allTimeLine.resume()
+          allTimeLine.add(new TweenMax(senceOne, 5, { rotation: Math.PI / 180 * 360, ease: Linear.easeIn }))
           allTimeLine.play()
         } else {
           
