@@ -48,22 +48,32 @@ export default defineComponent({
         // if (idx > 2) return
         const _container: PIXI.Container = new PIXI.Container()
         const _graphics: PIXI.Graphics = new PIXI.Graphics()
-        const _text: PIXI.Text = new PIXI.Text(`${idx + 1}`)
+        const _mask: PIXI.Graphics = new PIXI.Graphics()
+        const _text: PIXI.Text = new PIXI.Text(`${idx + 1}`, new PIXI.TextStyle({ fontSize: 202 }))
         
         const _previewOccupy =  idx > 0  ? rouletteSecs[idx - 1].occupy : 0
         accumNum += _previewOccupy
 
         sec.accum = accumNum
-        _graphics.beginFill(colors[idx])
         const selfAngle = (arcAngle * sec.occupy / 2) 
         const base = Math.PI / 180 * 90
+        _graphics.beginFill(colors[idx])
         _graphics.arc(position, position, outsideRadius, -selfAngle - base, selfAngle - base, false)
         _graphics.arc(position, position, insideRadius, selfAngle - base, -selfAngle - base, true)
         _graphics.endFill()
+
+        _mask.beginFill(colors[idx])
+        _mask.arc(position, position, outsideRadius, -selfAngle - base, selfAngle - base, false)
+        _mask.arc(position, position, insideRadius, selfAngle - base, -selfAngle - base, true)
+        _mask.endFill()
+
         _text.anchor.x = _text.anchor.y = .5
         _text.y = -120
+        _text
         _container.addChild(_graphics)
+        _container.addChild(_mask)
         _container.addChild(_text)
+        _container.mask = _mask
         
         
         _container.rotation = Math.PI / 180 * (average * (idx > 0 ? sec.accum - (rouletteSecs[0].occupy * .5) + sec.occupy * .5 : 0))
