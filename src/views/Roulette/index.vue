@@ -38,20 +38,22 @@ export default defineComponent({
       
       const arcAngle = Math.PI / (num / 2)
       // const startAngle = arcAngle * 1
-      const outsideRadius = clientWidth * .5
-      const insideRadius = 50
+      const outsideRadius = 90 // clientWidth * .5
+      const insideRadius = 10
       const position = 0
       const colors = generateColors(num)
+      let accumNum = 0
       let accumAngle = 0
       rouletteSecs.forEach((sec, idx) => {
-        
+        // if (idx > 1) return
         const _container: PIXI.Container = new PIXI.Container()
         const _graphics: PIXI.Graphics = new PIXI.Graphics()
         const _text: PIXI.Text = new PIXI.Text(`${idx + 1}`)
-        accumAngle += idx > 0
-          ? rouletteSecs[idx - 1].occupy
-          : 0
-        sec.accum = accumAngle
+
+        const _previewOccupy =  idx > 0  ? rouletteSecs[idx - 1].occupy : 0
+        accumNum += _previewOccupy
+
+        sec.accum = accumNum
         _graphics.beginFill(colors[idx])
         const selfAngle = (arcAngle * sec.occupy / 2) 
         const base = Math.PI / 180 * 90
@@ -62,8 +64,8 @@ export default defineComponent({
         _text.y = -120
         _container.addChild(_graphics)
         _container.addChild(_text)
-        const oldAcc = accumAngle - sec.occupy
-      _container.rotation = Math.PI / 180 * (360 / num * (accumAngle / 2 + (idx > 0 ? oldAcc * .5 - sec.occupy:0)))
+        const _defaultAngle = idx > 0 ? rouletteSecs[0].occupy * .5 : 0
+        _container.rotation = Math.PI / 180 * (360 / num * (idx > 0 ? _defaultAngle + sec.occupy * .5 : 0))
         roulette.addChild(_container)
       })
 
