@@ -23,7 +23,13 @@ export default defineComponent({
       { label: 'prizeSix', occupy: 2, accum: 0 },
       { label: 'prizeSeven', occupy: 1, accum: 0 },
     ]
+    
     onMounted(() => {
+      
+
+      const images = ['/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png']
+
+
       // const containers: PIXI.Container[] = []
       const mayLayout: HTMLElement = document.getElementById('mainLayout')!
       const { clientWidth, clientHeight } = mayLayout
@@ -42,15 +48,21 @@ export default defineComponent({
       const insideRadius = 10
       const position = 0
       const colors = generateColors(num)
+      const imgSize = 120
       let accumNum = 0
-      
-      rouletteSecs.forEach((sec, idx) => {
+
+      app.loader
+        .add(images.slice(0,2))
+        .load((loader, resources) => {
+          rouletteSecs.forEach((sec, idx) => {
         // if (idx > 2) return
+        const fontSize = 12
         const _container: PIXI.Container = new PIXI.Container()
         const _graphics: PIXI.Graphics = new PIXI.Graphics()
         const _mask: PIXI.Graphics = new PIXI.Graphics()
-        const _text: PIXI.Text = new PIXI.Text(`${idx + 1}`, new PIXI.TextStyle({ fontSize: 202 }))
-        
+        const _text: PIXI.Text = new PIXI.Text(`${idx + 1}`, new PIXI.TextStyle({ fontSize }))
+        // const _texture: PIXI.Texture = PIXI.Texture.from(images[idx])
+        const _img: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.from(images[idx]))
         const _previewOccupy =  idx > 0  ? rouletteSecs[idx - 1].occupy : 0
         accumNum += _previewOccupy
 
@@ -67,12 +79,23 @@ export default defineComponent({
         _mask.arc(position, position, insideRadius, selfAngle - base, -selfAngle - base, true)
         _mask.endFill()
 
-        _text.anchor.x = _text.anchor.y = .5
-        _text.y = -120
-        _text
+        _text.anchor.x = .5
+        _text.anchor.y = .5
+        _text.y = -outsideRadius + fontSize * .38
+
+        _img.anchor.x = .5
+        _img.anchor.y = .5
+        
+        if (_img.width > imgSize) { 
+          _img.scale.x = _img.scale.y = imgSize / _img.width
+        }
+
+        _img.y = -outsideRadius + _img.height * .75
+
         _container.addChild(_graphics)
         _container.addChild(_mask)
         _container.addChild(_text)
+        _container.addChild(_img)
         _container.mask = _mask
         
         
@@ -114,6 +137,13 @@ export default defineComponent({
         roulette.rotation = 0
         allTimeLine.play()
       })
+          
+        })
+      
+
+      
+      
+      
 
     })
 
