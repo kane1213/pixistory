@@ -5,7 +5,8 @@
     .links
       router-link.mr-2(to="/home") Home
       router-link.mr-2(to="/about") About
-      router-link(to="/story") Story
+      router-link.mr-2(to="/story") Story
+      router-link(to="/roulette") Roulette
   #mainLayout
     slot
   footerComp

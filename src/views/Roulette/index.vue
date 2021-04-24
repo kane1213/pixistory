@@ -27,8 +27,8 @@ export default defineComponent({
     onMounted(() => {
       
 
-      const images = ['/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png']
-
+      // const images = ['/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png']
+      const images = new Array(10).fill('/foodsicon/').map((v,i) => `${v}food${i + 1}.png`)
 
       // const containers: PIXI.Container[] = []
       const mayLayout: HTMLElement = document.getElementById('mainLayout')!
@@ -90,15 +90,13 @@ export default defineComponent({
           _img.scale.x = _img.scale.y = imgSize / _img.width
         }
 
-        _img.y = -outsideRadius + _img.height * .75
+        _img.y = -outsideRadius + _img.height
 
         _container.addChild(_graphics)
         _container.addChild(_mask)
         _container.addChild(_text)
         _container.addChild(_img)
         _container.mask = _mask
-        
-        
         _container.rotation = Math.PI / 180 * (average * (idx > 0 ? sec.accum - (rouletteSecs[0].occupy * .5) + sec.occupy * .5 : 0))
         roulette.addChild(_container)
       })
