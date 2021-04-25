@@ -52,7 +52,7 @@ export default defineComponent({
       let accumNum = 0
 
       app.loader
-        .add(images.slice(0,2))
+        .add(images)
         .load((loader, resources) => {
           rouletteSecs.forEach((sec, idx) => {
         // if (idx > 2) return
@@ -135,13 +135,8 @@ export default defineComponent({
         roulette.rotation = 0
         allTimeLine.play()
       })
-          
-        })
-      
+    })
 
-      
-      
-      
 
     })
 
