@@ -1,5 +1,6 @@
 <template lang="pug">
 #roulette(ref="rouletteDom")
+.prize_num NUMBER: {{ prizeNum + 1 }}
 </template>
 <script lang="ts">
 import { computed, defineComponent, ref, reactive, onMounted } from 'vue'
@@ -13,6 +14,7 @@ interface RoulettePrize {
 export default defineComponent({
   setup () {
     const rouletteDom = ref()
+    const prizeNum = ref(0)
     const generateColors = (num: Number): number[] => new Array(num).fill(0).map(() => Math.floor(Math.random()*16777215))
     const rouletteSecs: RoulettePrize[] = [
       { label: 'prizeOne', occupy: 4, accum: 0 },
@@ -56,7 +58,7 @@ export default defineComponent({
         .load((loader, resources) => {
           rouletteSecs.forEach((sec, idx) => {
         // if (idx > 2) return
-        const fontSize = 12
+        const fontSize = 180
         const _container: PIXI.Container = new PIXI.Container()
         const _graphics: PIXI.Graphics = new PIXI.Graphics()
         const _mask: PIXI.Graphics = new PIXI.Graphics()
@@ -81,7 +83,9 @@ export default defineComponent({
 
         _text.anchor.x = .5
         _text.anchor.y = .5
-        _text.y = -outsideRadius + fontSize * .38
+        _text.y = -outsideRadius + fontSize * .38 + 30
+        _text.alpha = .25
+        // _text.y = -outsideRadius * .25
 
         _img.anchor.x = .5
         _img.anchor.y = .5
@@ -90,7 +94,7 @@ export default defineComponent({
           _img.scale.x = _img.scale.y = imgSize / _img.width
         }
 
-        _img.y = -outsideRadius + _img.height
+        _img.y = -outsideRadius + _img.height + 50
 
         _container.addChild(_graphics)
         _container.addChild(_mask)
@@ -101,12 +105,47 @@ export default defineComponent({
         roulette.addChild(_container)
       })
 
+      
+
+      // roulette.lineStyle(10, 0x000000, 10)
+
       roulette.x = clientWidth * .5
       roulette.y = clientHeight * .5
       if (rouletteDom.value) {
         const element: HTMLDivElement = rouletteDom.value!
         element.appendChild(app.view)
       }
+
+
+      const outter: PIXI.Container = new PIXI.Container()
+      app.stage.addChild(outter)
+      
+      const layout = new PIXI.Graphics()
+      layout.lineStyle(20, 0xff0000, 1, 0)
+      layout.drawCircle(0, 0, outsideRadius)
+      layout.endFill()
+      outter.addChild(layout)
+
+      const arrow = new PIXI.Graphics()
+      arrow.beginFill(0x000000);
+      arrow.moveTo(-5, 0)
+      arrow.lineTo(0, -100)
+      arrow.lineTo(5, 0)
+      arrow.closePath()
+      outter.addChild(arrow)
+
+      const middleCircle = new PIXI.Graphics()
+      middleCircle.beginFill(0x000000)
+      middleCircle.drawCircle(0, 0, 15)
+      middleCircle.endFill()
+      outter.addChild(middleCircle)
+      
+      outter.x = clientWidth * .5
+      outter.y = clientHeight * .5
+
+
+
+
 
       const loop = new TweenMax(roulette, 5, { rotation: arcAngle * (num), ease: Linear.easeNone })
 
@@ -126,6 +165,7 @@ export default defineComponent({
         allTimeLine.clear()
         allTimeLine._repeat = 0
         const prize: number = Math.floor(Math.random() * rouletteSecs.length)
+        prizeNum.value = prize
         const { occupy, accum } = rouletteSecs[prize]
         const _startAngle = average * rouletteSecs[0].occupy * .5
         const _accumAngle = average * accum
@@ -140,11 +180,12 @@ export default defineComponent({
 
     })
 
-    return { rouletteDom }
+    return { rouletteDom, prizeNum }
   }
 })
 </script>
 
-<style>
-
+<style lang="sass" scoped>
+.prize_num
+  @apply fixed right-2 bottom-10
 </style>
