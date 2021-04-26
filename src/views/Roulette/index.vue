@@ -59,117 +59,103 @@ export default defineComponent({
       app.loader
         .add(images.concat(lightImgs))
         .load((loader, resources) => {
+
+
           rouletteSecs.forEach((sec, idx) => {
-        // if (idx > 2) return
-        const fontSize = 180
-        const _container: PIXI.Container = new PIXI.Container()
-        const _graphics: PIXI.Graphics = new PIXI.Graphics()
-        const _mask: PIXI.Graphics = new PIXI.Graphics()
-        const _text: PIXI.Text = new PIXI.Text(`${idx + 1}`, new PIXI.TextStyle({ fontSize }))
-        // const _texture: PIXI.Texture = PIXI.Texture.from(images[idx])
-        const _img: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.from(images[idx]))
-        const _previewOccupy =  idx > 0  ? rouletteSecs[idx - 1].occupy : 0
-        accumNum += _previewOccupy
+            // if (idx > 2) return
+            const fontSize = 180
+            const _container: PIXI.Container = new PIXI.Container()
+            const _graphics: PIXI.Graphics = new PIXI.Graphics()
+            const _mask: PIXI.Graphics = new PIXI.Graphics()
+            const _text: PIXI.Text = new PIXI.Text(`${idx + 1}`, new PIXI.TextStyle({ fontSize }))
+            // const _texture: PIXI.Texture = PIXI.Texture.from(images[idx])
+            const _img: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.from(images[idx]))
+            const _previewOccupy =  idx > 0  ? rouletteSecs[idx - 1].occupy : 0
+            accumNum += _previewOccupy
 
-        sec.accum = accumNum
-        const selfAngle = (arcAngle * sec.occupy / 2) 
-        const base = Math.PI / 180 * 90
-        _graphics.beginFill(colors[idx])
-        _graphics.arc(position, position, outsideRadius, -selfAngle - base, selfAngle - base, false)
-        _graphics.arc(position, position, insideRadius, selfAngle - base, -selfAngle - base, true)
-        _graphics.endFill()
+            sec.accum = accumNum
+            const selfAngle = (arcAngle * sec.occupy / 2) 
+            const base = Math.PI / 180 * 90
+            _graphics.beginFill(colors[idx])
+            _graphics.arc(position, position, outsideRadius, -selfAngle - base, selfAngle - base, false)
+            _graphics.arc(position, position, insideRadius, selfAngle - base, -selfAngle - base, true)
+            _graphics.endFill()
 
-        _mask.beginFill(colors[idx])
-        _mask.arc(position, position, outsideRadius, -selfAngle - base, selfAngle - base, false)
-        _mask.arc(position, position, insideRadius, selfAngle - base, -selfAngle - base, true)
-        _mask.endFill()
+            _mask.beginFill(colors[idx])
+            _mask.arc(position, position, outsideRadius, -selfAngle - base, selfAngle - base, false)
+            _mask.arc(position, position, insideRadius, selfAngle - base, -selfAngle - base, true)
+            _mask.endFill()
 
-        _text.anchor.x = .5
-        _text.anchor.y = .5
-        _text.y = -outsideRadius + fontSize * .38 + 30
-        _text.alpha = .25
-        // _text.y = -outsideRadius * .25
+            _text.anchor.x = .5
+            _text.anchor.y = .5
+            _text.y = -outsideRadius + fontSize * .38 + 30
+            _text.alpha = .25
+            // _text.y = -outsideRadius * .25
 
-        _img.anchor.x = .5
-        _img.anchor.y = .5
-        
-        if (_img.width > imgSize) { 
-          _img.scale.x = _img.scale.y = imgSize / _img.width
-        }
+            _img.anchor.x = .5
+            _img.anchor.y = .5
+            
+            if (_img.width > imgSize) { 
+              _img.scale.x = _img.scale.y = imgSize / _img.width
+            }
 
-        _img.y = -outsideRadius + _img.height + 50
+            _img.y = -outsideRadius + _img.height + 50
 
-        _container.addChild(_graphics)
-        _container.addChild(_mask)
-        _container.addChild(_text)
-        _container.addChild(_img)
-        _container.mask = _mask
-        _container.rotation = Math.PI / 180 * (average * (idx > 0 ? sec.accum - (rouletteSecs[0].occupy * .5) + sec.occupy * .5 : 0))
-        roulette.addChild(_container)
-      })
+            _container.addChild(_graphics)
+            _container.addChild(_mask)
+            _container.addChild(_text)
+            _container.addChild(_img)
+            _container.mask = _mask
+            _container.rotation = Math.PI / 180 * (average * (idx > 0 ? sec.accum - (rouletteSecs[0].occupy * .5) + sec.occupy * .5 : 0))
+            roulette.addChild(_container)
+          })
+          roulette.x = clientWidth * .5
+          roulette.y = clientHeight * .5
+          if (rouletteDom.value) {
+            const element: HTMLDivElement = rouletteDom.value!
+            element.appendChild(app.view)
+          }
+          const outter: PIXI.Container = new PIXI.Container()
+          app.stage.addChild(outter)
+          const layout = new PIXI.Graphics()
+          layout.lineStyle(20, 0xff0000, 1, 0)
+          layout.drawCircle(0, 0, outsideRadius)
+          layout.endFill()
+          outter.addChild(layout)
 
-      
+          const arrow = new PIXI.Graphics()
+          arrow.beginFill(0x000000);
+          arrow.moveTo(-5, 0)
+          arrow.lineTo(0, -100)
+          arrow.lineTo(5, 0)
+          arrow.closePath()
+          outter.addChild(arrow)
 
-      // roulette.lineStyle(10, 0x000000, 10)
+          const middleCircle = new PIXI.Graphics()
+          middleCircle.beginFill(0x000000)
+          middleCircle.drawCircle(0, 0, 15)
+          middleCircle.endFill()
+          outter.addChild(middleCircle)
 
-      roulette.x = clientWidth * .5
-      roulette.y = clientHeight * .5
-      if (rouletteDom.value) {
-        const element: HTMLDivElement = rouletteDom.value!
-        element.appendChild(app.view)
-      }
-
-
-      const outter: PIXI.Container = new PIXI.Container()
-      app.stage.addChild(outter)
-      
-      const layout = new PIXI.Graphics()
-      layout.lineStyle(20, 0xff0000, 1, 0)
-      layout.drawCircle(0, 0, outsideRadius)
-      layout.endFill()
-      outter.addChild(layout)
-
-      const arrow = new PIXI.Graphics()
-      arrow.beginFill(0x000000);
-      arrow.moveTo(-5, 0)
-      arrow.lineTo(0, -100)
-      arrow.lineTo(5, 0)
-      arrow.closePath()
-      outter.addChild(arrow)
-
-      const middleCircle = new PIXI.Graphics()
-      middleCircle.beginFill(0x000000)
-      middleCircle.drawCircle(0, 0, 15)
-      middleCircle.endFill()
-      outter.addChild(middleCircle)
-
-      const numOfLight = 6
-      for(let i = 0; i <= numOfLight; i ++) {
-        const lightSprites = new PIXI.AnimatedSprite(lightImgs.reduce((acc: PIXI.Texture[], img: string): PIXI.Texture[] => acc.concat(PIXI.Texture.from(img)) , []))
-        outter.addChild(lightSprites)
-        lightSprites.anchor.x = lightSprites.anchor.y = .5
-        lightSprites.pivot.y = (outsideRadius - 10) * 2
-        lightSprites.scale.x = lightSprites.scale.y = .5
-        lightSprites.rotation = Math.PI / 180 * 360 / numOfLight * i
-        lightSprites.play()
-      }
-      
-      outter.x = clientWidth * .5
-      outter.y = clientHeight * .5
-      const loop = new TweenMax(roulette, 5, { rotation: arcAngle * (num), ease: Linear.easeNone })
-
-      // const lottery = new TweenMax(senceOne, 5, { rotation: Math.PI / 180 * 360, ease: Linear.easeIn })
-
-       
-      allTimeLine.add(loop)
-      // allTimeLine.add(lottery)
-      allTimeLine.play()
-      roulette.interactive = roulette.buttonMode = true
-      roulette.addListener('click', startLottery)
-      roulette.addListener('touchstart', startLottery)
-    })
-
-
+          const numOfLight = 6
+          for(let i = 0; i <= numOfLight; i ++) {
+            const lightSprites = new PIXI.AnimatedSprite(lightImgs.reduce((acc: PIXI.Texture[], img: string): PIXI.Texture[] => acc.concat(PIXI.Texture.from(img)) , []))
+            outter.addChild(lightSprites)
+            lightSprites.anchor.x = lightSprites.anchor.y = .5
+            lightSprites.pivot.y = (outsideRadius - 10) * 2
+            lightSprites.scale.x = lightSprites.scale.y = .5
+            lightSprites.rotation = Math.PI / 180 * 360 / numOfLight * i
+            lightSprites.play()
+          }
+          outter.x = clientWidth * .5
+          outter.y = clientHeight * .5
+          const loop = new TweenMax(roulette, 5, { rotation: arcAngle * (num), ease: Linear.easeNone })
+          allTimeLine.add(loop)
+          allTimeLine.play()
+          roulette.interactive = roulette.buttonMode = true
+          roulette.addListener('click', startLottery)
+          roulette.addListener('touchstart', startLottery)
+        })
     })
 
     const startLottery = () => {
@@ -190,7 +176,6 @@ export default defineComponent({
       roulette.rotation = 0
       allTimeLine.play()
     }
-
     return { rouletteDom, prizeNum }
   }
 })
