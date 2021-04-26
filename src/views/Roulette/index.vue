@@ -34,7 +34,8 @@ export default defineComponent({
       
       // const images = ['/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png']
       const images = new Array(10).fill('/foodsicon/').map((v,i) => `${v}food${i + 1}.png`)
-      const lightImgs = new Array(35).fill('/lights/tile0').map((v, i) => `${v}${('0' + i).slice(-2)}.png`)
+      // const lightImgs = new Array(35).fill('/lights/tile0').map((v, i) => `${v}${('0' + i).slice(-2)}.png`)
+      const lightImgs = new Array(3).fill('/lights/bulb').map((v, i) => `${v}${(i+1)}.png`)
       // const containers: PIXI.Container[] = []
       const mayLayout: HTMLElement = document.getElementById('mainLayout')!
       const { clientWidth, clientHeight } = mayLayout
@@ -67,7 +68,7 @@ export default defineComponent({
             const _container: PIXI.Container = new PIXI.Container()
             const _graphics: PIXI.Graphics = new PIXI.Graphics()
             const _mask: PIXI.Graphics = new PIXI.Graphics()
-            const _text: PIXI.Text = new PIXI.Text(`${idx + 1}`, new PIXI.TextStyle({ fontSize }))
+            const _text: PIXI.Text = new PIXI.Text(`${idx + 1}`, new PIXI.TextStyle({ fontSize, fill: '#ffffff' }))
             // const _texture: PIXI.Texture = PIXI.Texture.from(images[idx])
             const _img: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.from(images[idx]))
             const _previewOccupy =  idx > 0  ? rouletteSecs[idx - 1].occupy : 0
@@ -118,16 +119,16 @@ export default defineComponent({
           const outter: PIXI.Container = new PIXI.Container()
           app.stage.addChild(outter)
           const layout = new PIXI.Graphics()
-          layout.lineStyle(20, 0xff0000, 1, 0)
+          layout.lineStyle(30, 0xff0000, 1, 0)
           layout.drawCircle(0, 0, outsideRadius)
           layout.endFill()
           outter.addChild(layout)
 
           const arrow = new PIXI.Graphics()
           arrow.beginFill(0x000000);
-          arrow.moveTo(-5, 0)
+          arrow.moveTo(-10, 0)
           arrow.lineTo(0, -100)
-          arrow.lineTo(5, 0)
+          arrow.lineTo(10, 0)
           arrow.closePath()
           outter.addChild(arrow)
 
@@ -145,6 +146,7 @@ export default defineComponent({
             lightSprites.pivot.y = (outsideRadius - 10) * 2
             lightSprites.scale.x = lightSprites.scale.y = .5
             lightSprites.rotation = Math.PI / 180 * 360 / numOfLight * i
+            lightSprites.animationSpeed = 0.05
             lightSprites.play()
           }
           outter.x = clientWidth * .5
