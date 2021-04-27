@@ -1,6 +1,6 @@
 <template lang="pug">
 #roulette(ref="rouletteDom")
-.prize_num NUMBER: {{ prizeNum + 1 }}
+.prize_num NUMBER: {{ prizeNum + 1 }}, ROTATION: {{ rotationNum }}
 </template>
 <script lang="ts">
 import { computed, defineComponent, ref, reactive, onMounted } from 'vue'
@@ -15,6 +15,7 @@ export default defineComponent({
   setup () {
     const rouletteDom = ref()
     const prizeNum = ref(0)
+    const rotationNum = ref(0)
     const generateColors = (num: Number): number[] => new Array(num).fill(0).map(() => Math.floor(Math.random()*16777215))
     const rouletteSecs: RoulettePrize[] = [
       { label: 'prizeOne', occupy: 4, accum: 0 },
@@ -30,8 +31,8 @@ export default defineComponent({
     const num = rouletteSecs.reduce((acc, sec):number => acc + sec.occupy ,0)
     const average: number = 360 / num
     const roulette: PIXI.Container = new PIXI.Container()
+    const lightSpriteList: PIXI.AnimatedSprite[] = []
     onMounted(() => {
-      
       // const images = ['/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png']
       const images = new Array(10).fill('/foodsicon/').map((v,i) => `${v}food${i + 1}.png`)
       // const lightImgs = new Array(35).fill('/lights/tile0').map((v, i) => `${v}${('0' + i).slice(-2)}.png`)
@@ -46,8 +47,6 @@ export default defineComponent({
       });
       
       app.stage.addChild(roulette)
-      
-      
       const arcAngle = Math.PI / (num / 2)
       // const startAngle = arcAngle * 1
       const outsideRadius = clientWidth * .5
@@ -55,6 +54,7 @@ export default defineComponent({
       const position = 0
       const colors = generateColors(num)
       const imgSize = 120
+      
       let accumNum = 0
 
       app.loader
@@ -137,17 +137,17 @@ export default defineComponent({
           middleCircle.drawCircle(0, 0, 15)
           middleCircle.endFill()
           outter.addChild(middleCircle)
-
-          const numOfLight = 6
+          const numOfLight = 8
           for(let i = 0; i <= numOfLight; i ++) {
             const lightSprites = new PIXI.AnimatedSprite(lightImgs.reduce((acc: PIXI.Texture[], img: string): PIXI.Texture[] => acc.concat(PIXI.Texture.from(img)) , []))
+            lightSpriteList.push(lightSprites)
             outter.addChild(lightSprites)
             lightSprites.anchor.x = lightSprites.anchor.y = .5
             lightSprites.pivot.y = (outsideRadius - 10) * 2
             lightSprites.scale.x = lightSprites.scale.y = .5
             lightSprites.rotation = Math.PI / 180 * 360 / numOfLight * i
             lightSprites.animationSpeed = 0.05
-            lightSprites.play()
+            // lightSprites.gotoAndPlay(i)
           }
           outter.x = clientWidth * .5
           outter.y = clientHeight * .5
@@ -173,12 +173,28 @@ export default defineComponent({
       const _startAngle = average * rouletteSecs[0].occupy * .5
       const _accumAngle = average * accum
       const _half = average * (occupy * (.1 + Math.random() * .9))
-      const lottery = new TweenMax(roulette, 1, { rotation: Math.PI / 180 * (360 * 3 - _accumAngle - _half + _startAngle), ease: Linear.easeIn })
+      const lottery = new TweenMax(roulette, 6, { rotation: Math.PI / 180 * (360 * 4 - _accumAngle - _half + _startAngle), ease: Strong.easeOut })
+      rotationNum.value = roulette.rotation
       allTimeLine.add(lottery)
       roulette.rotation = 0
-      allTimeLine.play()
+
+      // roulette.children[prize]['children'].slice(0,2).forEach(graphics => {
+      //   graphics.arc(0, 0, outsideRadius, -selfAngle - base, selfAngle - base, false)
+      //   graphics.arc(0, 0, insideRadius, selfAngle - base, -selfAngle - base, true)
+      // })
+
+
+      allTimeLine.play().then(() => {
+        lightSpriteList.forEach(light => {
+          light.gotoAndStop(0)
+        })
+      })
+
+      lightSpriteList.forEach((item, idx) => {
+        item.gotoAndPlay(idx)
+      })
     }
-    return { rouletteDom, prizeNum }
+    return { rouletteDom, prizeNum, rotationNum }
   }
 })
 </script>
