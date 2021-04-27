@@ -17,6 +17,8 @@ export default defineComponent({
     const prizeNum = ref(0)
     const rotationNum = ref(0)
     const generateColors = (num: Number): number[] => new Array(num).fill(0).map(() => Math.floor(Math.random()*16777215))
+    // const colors: string[] = ['#388659', '#52aa5e', '#52aa8a', '#3aaed8', '#2bd9fe', '#3edcfe', '#50dffe', '#60e2fe', '#6ee5fe', '#7be7fe']
+    const colors: number[] = [0x388659, 0x52aa5e, 0x52aa8a, 0x3aaed8, 0x2bd9fe, 0x3edcfe, 0x50dffe, 0x60e2fe, 0x6ee5fe, 0x7be7fe]
     const rouletteSecs: RoulettePrize[] = [
       { label: 'prizeOne', occupy: 4, accum: 0 },
       { label: 'prizeTwo', occupy: 1, accum: 0 },
@@ -52,7 +54,7 @@ export default defineComponent({
       const outsideRadius = clientWidth * .5
       const insideRadius = 10
       const position = 0
-      const colors = generateColors(num)
+      // const colors = generateColors(num)
       const imgSize = 120
       
       let accumNum = 0
