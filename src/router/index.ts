@@ -40,6 +40,15 @@ const routes: Array<RouteRecordRaw> = [
       keepAlive: true
     },
     component: () => import('../views/Roulette/index.vue')
+  },
+  {
+    path: '/cardItems',
+    name: 'CardItems',
+    meta: {
+      title: 'card items page',
+      keepAlive: true
+    },
+    component: () => import('../views/Cards/index.vue')
   }
 ]
 
