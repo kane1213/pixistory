@@ -23,8 +23,6 @@ const themeColor = reactive({
 })
 const route = useRoute()
 const routeName = computed(() => route.name)
-
-console.log(route.name)
 </script>
 <style lang="sass">
 .header
