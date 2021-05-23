@@ -1,5 +1,6 @@
 <template lang="pug">
 #item(ref="itemDom")
+div.upload-image(@click.stop="uploadImageEvent") UPLOAD
 </template>
 <script lang="ts">
 import { computed, defineComponent, ref, reactive, onMounted } from 'vue'
@@ -23,14 +24,14 @@ export default defineComponent({
     // PIXI.preserveDrawingBuffer:true
 
     if (Object.keys(route.params).length === 0) router.replace({ name: 'CardItems' })
-
+    let app
     onMounted(() => {
       // const images = ['/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png']
       
       const images = [`/cards/${route.params.title}.png`]
       const mayLayout: HTMLElement = document.getElementById('mainLayout')!
       const { clientWidth, clientHeight } = mayLayout
-      const app = new PIXI.Application({
+      app = new PIXI.Application({
         width: clientWidth,
         height: clientWidth,
         transparent: true,
@@ -46,8 +47,8 @@ export default defineComponent({
           const _hexColor = route.params.color || '#FFFFFF'
           function HEXToVBColor(rrggbb: string) {
             rrggbb = rrggbb.replace('#', '')
-            const bbggrr = rrggbb.substr(4, 2) + rrggbb.substr(2, 2) + rrggbb.substr(0, 2);
-            return parseInt(bbggrr, 16);
+            // const bbggrr = rrggbb.substr(4, 2) + rrggbb.substr(2, 2) + rrggbb.substr(0, 2);
+            return parseInt(rrggbb.replace('#', ''), 16);
           }
 
           _graphics.beginFill(HEXToVBColor(_hexColor))
@@ -55,6 +56,7 @@ export default defineComponent({
           _graphics.endFill()
           _graphics.x = -400
           _graphics.y = -400
+          
           _img.anchor.x = .5
           _img.anchor.y = .5
 
@@ -75,8 +77,19 @@ export default defineComponent({
         })
     })
 
+    function uploadImageEvent () {
+      console.log(app.renderer.view.toDataURL('image/jpeg'))
+    }
     
-    return { itemDom }
+    return { itemDom, uploadImageEvent }
   }
 })
 </script>
+
+
+<style lang="sass" scoped>
+.upload-image
+  width: 100px
+  @apply rounded bg-blue-800 my-3 ml-3 cursor-pointer text-white text-center
+</style>
+
