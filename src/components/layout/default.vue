@@ -6,9 +6,9 @@
       router-link.mr-2(to="/home") Home
       router-link.mr-2(to="/about") About
       //- router-link.mr-2(to="/story") Story
-      router-link(to="/roulette") Roulette
-  #mainLayout(:class="{'cardMode': routeName === 'CardItems'}")
-    div(v-text="routeName")
+      router-link.mr-2(to="/roulette") Roulette
+      router-link(to="/cardItems") Cards
+  #mainLayout(:class="{'cardMode': routeName === 'CardItem'}")
     slot
   footerComp
 </template>
@@ -32,5 +32,5 @@ const routeName = computed(() => route.name)
 #mainLayout
   @apply max-w-xl flex-1 mx-auto w-full border
   &.cardMode
-    max-width: 800px
+    max-width: 802px
 </style>

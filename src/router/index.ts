@@ -48,7 +48,12 @@ const routes: Array<RouteRecordRaw> = [
       title: 'card items page',
       keepAlive: true
     },
-    component: () => import('../views/Cards/index.vue')
+    component: () => import('../views/Cards/index.vue'),
+  },
+  {
+    path: '/item',
+    name: 'CardItem',
+    component: () => import('../views/Cards/item.vue'),
   }
 ]
 

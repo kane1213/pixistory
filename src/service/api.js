@@ -1,3 +1,3 @@
 import ajax from './ajax';
 
-export const getCardList = () => ajax('/card/items');
+export const getCardList = (page = 1, per = 10) => ajax(`/card/items?page=${page}&per=${per}`);
