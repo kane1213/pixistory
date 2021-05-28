@@ -1,12 +1,16 @@
 <template lang="pug">
 #item(ref="itemDom")
-div.upload-image(@click.stop="uploadImageEvent") UPLOAD
+div.flex.items-center
+  div.upload-image.mr-2(@click.stop="uploadImageEvent") UPLOAD
+  div
+    input(type="color" v-model="color")
+    button.bg-blue-800.rounded.text-white.px-2(@click.stop="changeColor") CHANGE COLOR
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref, reactive, onMounted } from 'vue'
+import { defineComponent, ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import * as PIXI from 'pixi.js'
-import { TweenMax, TimelineMax, Linear, Strong } from 'gsap'
+import { updateItemImageColorById } from '@/service/api.js' // updateItemImageById, updateItemColorById
 interface RoulettePrize {
   label: string,
   occupy: number,
@@ -17,23 +21,26 @@ export default defineComponent({
     const route = useRoute()
     const router = useRouter()
     const itemDom = ref()
+    const color = ref(route.params.color)
     const generateColors = (num: Number): number[] => new Array(num).fill(0).map(() => Math.floor(Math.random()*16777215))
-    // const colors: string[] = ['#388659', '#52aa5e', '#52aa8a', '#3aaed8', '#2bd9fe', '#3edcfe', '#50dffe', '#60e2fe', '#6ee5fe', '#7be7fe']
-    const colors: number[] = [0x388659, 0x52aa5e, 0x52aa8a, 0x3aaed8, 0x2bd9fe, 0x3edcfe, 0x50dffe, 0x60e2fe, 0x6ee5fe, 0x7be7fe]
     const itemContainer: PIXI.Container = new PIXI.Container()
-    // PIXI.preserveDrawingBuffer:true
+    const canvasSize = reactive({ width: 0, height: 0 })
+    const images = [`/cards/${route.params.title}.png`]
+
 
     if (Object.keys(route.params).length === 0) router.replace({ name: 'CardItems' })
     let app
     onMounted(() => {
       // const images = ['/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png', '/recipe1/meats.png', '/recipe2/poteto1.png']
       
-      const images = [`/cards/${route.params.title}.png`]
-      const mayLayout: HTMLElement = document.getElementById('mainLayout')!
-      const { clientWidth, clientHeight } = mayLayout
+      
+      const mainLayout: HTMLElement = document.getElementById('mainLayout')!
+      // const { clientWidth, clientHeight } = mayLayout
+      canvasSize.width = mainLayout.clientWidth
+      canvasSize.height = mainLayout.clientHeight
       app = new PIXI.Application({
-        width: clientWidth,
-        height: clientWidth,
+        width: canvasSize.width,
+        height: canvasSize.width,
         transparent: true,
         preserveDrawingBuffer: true
       });
@@ -42,46 +49,64 @@ export default defineComponent({
       app.loader
         .add(images)
         .load((loader, resources) => {
-          const _img: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.from(images[0]))
-          const _graphics: PIXI.Graphics = new PIXI.Graphics()
-          const _hexColor = route.params.color || '#FFFFFF'
-          function HEXToVBColor(rrggbb: string) {
-            rrggbb = rrggbb.replace('#', '')
-            // const bbggrr = rrggbb.substr(4, 2) + rrggbb.substr(2, 2) + rrggbb.substr(0, 2);
-            return parseInt(rrggbb.replace('#', ''), 16);
-          }
-
-          _graphics.beginFill(HEXToVBColor(_hexColor))
-          _graphics.drawRect(0, 0, 800, 800)
-          _graphics.endFill()
-          _graphics.x = -400
-          _graphics.y = -400
-          
-          _img.anchor.x = .5
-          _img.anchor.y = .5
-
-          itemContainer.addChild(_graphics)
-          itemContainer.addChild(_img)
-          itemContainer.x = clientWidth * .5
-          itemContainer.y = clientWidth * .5
-          if (itemDom.value) {
-            const element: HTMLDivElement = itemDom.value!
-            element.appendChild(app.view)
-
-            // setTimeout(() => {
-            //   console.log(app.renderer.view.toDataURL('image/jpeg'))
-            // }, 1000)
-          }
-
-          
+          renderCanvas()
         })
     })
 
+    function renderCanvas () {
+      const _img: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.from(images[0]))
+      const _graphics: PIXI.Graphics = new PIXI.Graphics()
+      function HEXToVBColor(rrggbb: string) {
+        rrggbb = rrggbb.replace('#', '')
+        // const bbggrr = rrggbb.substr(4, 2) + rrggbb.substr(2, 2) + rrggbb.substr(0, 2);
+        return parseInt(rrggbb.replace('#', ''), 16);
+      }
+
+      _graphics.beginFill(HEXToVBColor(color.value || '#FFFFFF'))
+      _graphics.drawRect(0, 0, 800, 800)
+      _graphics.endFill()
+      _graphics.x = -400
+      _graphics.y = -400
+      
+      _img.anchor.x = .5
+      _img.anchor.y = .5
+
+      itemContainer.addChild(_graphics)
+      itemContainer.addChild(_img)
+      itemContainer.x = canvasSize.width * .5
+      itemContainer.y = canvasSize.width * .5
+      if (itemDom.value) {
+        const element: HTMLDivElement = itemDom.value!
+        element.appendChild(app.view)
+
+        // setTimeout(() => {
+        //   console.log(app.renderer.view.toDataURL('image/jpeg'))
+        // }, 1000)
+      }
+    }
+
     function uploadImageEvent () {
-      console.log(app.renderer.view.toDataURL('image/jpeg'))
+      updateItemImageColorById(route.params.id, color.value, app.renderer.view.toDataURL('image/jpeg', 0.78))
+        .then(res => {
+          console.log(res)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
+
+    function changeColor () {
+      // updateItemColorById(route.params.id, color.value)
+      //   .then(res => {
+      //     console.log(res)
+      //   })
+      //   .catch(err => {
+      //     console.log(err)
+      //   })
+      renderCanvas()
     }
     
-    return { itemDom, uploadImageEvent }
+    return { itemDom, uploadImageEvent, color, changeColor }
   }
 })
 </script>
