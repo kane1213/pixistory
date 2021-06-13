@@ -4,9 +4,6 @@ div.flex.items-center
   div.upload-image.mr-2(@click.stop="uploadImageEvent") UPLOAD
   div
     input(type="color" v-model="color" @change="renderCanvas")
-  div
-    select(v-model="currentSize" @change="renderCanvas")
-      option(v-for="i in 20") {{ i * (1000 / 20)}}
 </template>
 <script lang="ts">
 import { defineComponent, ref, reactive, onMounted } from 'vue'
@@ -24,6 +21,7 @@ export default defineComponent({
     const router = useRouter()
     const itemDom = ref()
     const currentSize = ref(600)
+    const wheelTimeStamp = ref(0)
     const color = ref(route.params.color)
     const generateColors = (num: Number): number[] => new Array(num).fill(0).map(() => Math.floor(Math.random()*16777215))
     const itemContainer: PIXI.Container = new PIXI.Container()
@@ -70,18 +68,20 @@ export default defineComponent({
       }
 
       _circle.beginFill(HEXToVBColor('#FF0000'))
-      _circle.drawCircle(0, 0, 350)
+      _circle.drawCircle(0, 0, 260)
       _circle.endFill()
 
 
       _background.beginFill(HEXToVBColor(color.value || '#FFFFFF'))
       _background.drawRect(0, 0, 800, 800)
       _background.endFill()
+      // _background.alpha = .25
       _background.x = -400
       _background.y = -400
 
       _view.anchor.x = .5
       _view.anchor.y = .5
+      _view.alpha = .5
       _view.mask = _circle
       
       // _img.anchor.x = directions.x
@@ -110,10 +110,23 @@ export default defineComponent({
       itemContainer.y = canvasSize.width * .5
       if (itemDom.value) {
         const element: HTMLDivElement = itemDom.value!
+        const wheelUnitSize = 50
         element.appendChild(app.view)
-        itemDom.value.addEventListener('mousedown', onDragStart);
-        itemDom.value.addEventListener('mouseup', onDragEnd);
-        itemDom.value.addEventListener('mouseupoutside', onDragEnd);
+        itemDom.value.addEventListener('mousedown', onDragStart)
+        itemDom.value.addEventListener('mouseup', onDragEnd)
+        itemDom.value.addEventListener('mouseupoutside', onDragEnd)
+        itemDom.value.addEventListener('wheel', event => {
+          if (event.timeStamp - wheelTimeStamp.value < 100 || (event.deltaY < 0 && currentSize.value <= 0) || (event.deltaY >= 0 && currentSize.value >= 800)) return
+          wheelTimeStamp.value = event.timeStamp
+          currentSize.value += ((event.deltaY > 0 ? 1 : -1) * wheelUnitSize)
+          console.log(currentSize.value)
+          renderCanvas()
+        })
+        // console.log('----test----')
+        // console.log(itemDom.value)
+        // itemDom.value.onscroll = function(e){
+        //   console.log(e)
+        // };
       }
     }
 

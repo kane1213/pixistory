@@ -18,7 +18,7 @@ export default function ajax (url: string, method: string = 'get', data: any, is
       // 'timeZoneCode': Math.round(new Date().getTimezoneOffset() / 60),
     }, store.getters.gUserToken ? {Authorization: `Bearer ${store.getters.gUserToken}` }:{});
     const instance: AxiosInstance = axios.create({
-      baseURL: 'http://localhost:3000',
+      baseURL: 'http://localhost:8081',
       headers,
       // withCredentials: true,
       timeout: 8000,
