@@ -12,7 +12,7 @@ div.flex.items-center
 import { defineComponent, ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import * as PIXI from 'pixi.js'
-import { updateItemImageColorById } from '@/service/api.js' // updateItemImageById, updateItemColorById
+import { updateItemImageColorById, getCardList } from '@/service/api.js' // updateItemImageById, updateItemColorById
 interface RoulettePrize {
   label: string,
   occupy: number,
@@ -29,10 +29,11 @@ export default defineComponent({
     
     const itemContainer: PIXI.Container = new PIXI.Container()
     const canvasSize = reactive({ width: 0, height: 0 })
+    const pagination = reactive(JSON.parse(route.params.pagination))
     
     const selectedTarget = ref()
     const startPostion = reactive({ x: 0, y: 0, imgx: 0, imgy: 0})
-    const cards = JSON.parse(route.params.cards)
+    const cards = ref(JSON.parse(route.params.cards))
     const color = ref("#ffffff")
     if (Object.keys(route.params).length === 0) router.replace({ name: 'CardItems' })
     let app
@@ -49,15 +50,15 @@ export default defineComponent({
       });
       
       app.stage.addChild(itemContainer)
-      prepareCard(route.params.color, `${route.params.title}.png`)
+      prepareCard(route.params.color, `${route.params.title}.png`, true)
         // ${route.params.title}.png
     })
 
-    function prepareCard (paramColor, paramImage) {
+    function prepareCard (paramColor, paramImage, isFirstTime) {
       color.value = paramColor
       const images = [`/cards/${paramImage}`, '/cards/mountains.jpg']
       app.loader
-        .add(images)
+        .add(isFirstTime ? images : images.slice(1, -1))
         .load((loader, resources) => {
           renderCanvas(images)
         })
@@ -108,10 +109,6 @@ export default defineComponent({
 
       // Setup events for mouse + touch using the pointer events
       
-
-      // _img.aaaaaaaaaaa('')
-
-
       itemContainer.addChild(_background)
       itemContainer.addChild(_view)
       itemContainer.addChild(_circle)
@@ -189,12 +186,35 @@ export default defineComponent({
         })
     }
 
-    function btnEvent (eventName) {
+    async function btnEvent (eventName) {
 
       if (eventName === 'back') { 
-        router.replace({ name: 'CardItems' })
+        router.replace({ name: 'CardItems' , params: {"pagination": JSON.stringify(pagination)}})
         return
       }
+      const currentIndex = cards.value.findIndex(card => card.id == paramId.value)
+      let newItem = null
+      if (pagination.page === 1 && currentIndex === 0 && eventName === 'previous') return
+      else if (pagination.page < 4 && currentIndex === pagination.per -1 && eventName === 'next') {
+        pagination.page += 1
+        const res = await getCardList(pagination.page, pagination.per)
+        cards.value = res.data.items
+        newItem = cards[0];
+      } else if (pagination.page > 1 && currentIndex === 0 && eventName === 'previous') {
+        pagination.page -= 1
+        const res = await getCardList(pagination.page, pagination.per)
+        cards.value = res.data.items
+        newItem = cards[0]
+      } else {
+        newItem = (eventName === 'next') 
+          ? cards.value[currentIndex + 1]
+          : cards.value[currentIndex - 1]
+      }
+      paramId.value = newItem.id
+
+  console.log(newItem)
+
+      prepareCard(newItem.color, `${newItem.title}.png`, false)
 
       // const _currentItem = paramId 
 
