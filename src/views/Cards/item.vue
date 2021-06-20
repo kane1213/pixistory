@@ -4,6 +4,9 @@ div.flex.items-center
   div.upload-image.mr-2(@click.stop="uploadImageEvent") UPLOAD
   div
     input(type="color" v-model="color" @change="renderCanvas")
+  button.btn.ml-auto(@click.stop="btnEvent('previous')") 上一筆
+  button.btn.mx-2(@click.stop="btnEvent('next')") 下一筆
+  button.btn.mx-2(@click.stop="btnEvent('back')") 返回
 </template>
 <script lang="ts">
 import { defineComponent, ref, reactive, onMounted } from 'vue'
@@ -22,15 +25,15 @@ export default defineComponent({
     const itemDom = ref()
     const currentSize = ref(600)
     const wheelTimeStamp = ref(0)
-    const color = ref(route.params.color)
-    const generateColors = (num: Number): number[] => new Array(num).fill(0).map(() => Math.floor(Math.random()*16777215))
+    const paramId = ref(route.params.id)
+    
     const itemContainer: PIXI.Container = new PIXI.Container()
     const canvasSize = reactive({ width: 0, height: 0 })
-    const directions = reactive({x: .5, y: .5 })
-    const images = [`/cards/${route.params.title}.png`, '/cards/mountains.jpg']
+    
     const selectedTarget = ref()
     const startPostion = reactive({ x: 0, y: 0, imgx: 0, imgy: 0})
-
+    const cards = JSON.parse(route.params.cards)
+    const color = ref("#ffffff")
     if (Object.keys(route.params).length === 0) router.replace({ name: 'CardItems' })
     let app
     onMounted(() => {
@@ -46,16 +49,23 @@ export default defineComponent({
       });
       
       app.stage.addChild(itemContainer)
+      prepareCard(route.params.color, `${route.params.title}.png`)
+        // ${route.params.title}.png
+    })
+
+    function prepareCard (paramColor, paramImage) {
+      color.value = paramColor
+      const images = [`/cards/${paramImage}`, '/cards/mountains.jpg']
       app.loader
         .add(images)
         .load((loader, resources) => {
-          renderCanvas()
+          renderCanvas(images)
         })
-    })
-
+    }
     
 
-    function renderCanvas () {
+    function renderCanvas (images) {
+      
       const _img: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.from(images[0]))
       const _view: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.from(images[1]))
       const _background: PIXI.Graphics = new PIXI.Graphics()
@@ -179,7 +189,20 @@ export default defineComponent({
         })
     }
 
-    return { itemDom, uploadImageEvent, color, currentSize, renderCanvas }
+    function btnEvent (eventName) {
+
+      if (eventName === 'back') { 
+        router.replace({ name: 'CardItems' })
+        return
+      }
+
+      // const _currentItem = paramId 
+
+      // prepareCard(route.params.color, `${route.params.title}.png`)
+
+    }
+
+    return { itemDom, uploadImageEvent, color, currentSize, renderCanvas, btnEvent }
   }
 })
 </script>
@@ -190,6 +213,8 @@ export default defineComponent({
   width: 100px
   @apply rounded bg-blue-800 my-3 ml-3 cursor-pointer text-white text-center
 .btn
-  @apply px-2 mx-1 rounded
+  @apply px-2 rounded
+  background-color: blue
+  color: #fff
 </style>
 
