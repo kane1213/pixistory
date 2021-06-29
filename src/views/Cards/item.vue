@@ -35,6 +35,7 @@ export default defineComponent({
     const startPostion = reactive({ x: 0, y: 0, imgx: 0, imgy: 0})
     const cards = ref(JSON.parse(route.params.cards))
     const color = ref("#ffffff")
+    const images = ref([])
     if (Object.keys(route.params).length === 0) router.replace({ name: 'CardItems' })
     let app
     onMounted(() => {
@@ -56,31 +57,33 @@ export default defineComponent({
 
     function prepareCard (paramColor, paramImage, isFirstTime) {
       color.value = paramColor
-      const images = [`/cards/${paramImage}`, '/cards/mountains.jpg']
+      images.value = [`/cards/${paramImage}`] // , '/cards/mountains.jpg'
       app.loader
-        .add(isFirstTime ? images : images.slice(1, -1))
+        .add(isFirstTime ? images.value : images.value.slice(1, -1))
         .load((loader, resources) => {
-          renderCanvas(images)
+          renderCanvas()
         })
     }
     
 
-    function renderCanvas (images) {
-      
-      const _img: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.from(images[0]))
-      const _view: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.from(images[1]))
+    function renderCanvas () {
+      const _img: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.from(images.value[0]))
+      // const _view: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.from(images[1]))
       const _background: PIXI.Graphics = new PIXI.Graphics()
-      const _circle: PIXI.Graphics = new PIXI.Graphics()
-      const _scale:number = currentSize.value / _img.width
+      // const _circle: PIXI.Graphics = new PIXI.Graphics()
+
+      
+      const _scale:number = Math.min(currentSize.value / Math.max(_img.width, 800), 1);
+
       function HEXToVBColor(rrggbb: string) {
         rrggbb = rrggbb.replace('#', '')
         // const bbggrr = rrggbb.substr(4, 2) + rrggbb.substr(2, 2) + rrggbb.substr(0, 2);
         return parseInt(rrggbb.replace('#', ''), 16);
       }
 
-      _circle.beginFill(HEXToVBColor('#FF0000'))
-      _circle.drawCircle(0, 0, 260)
-      _circle.endFill()
+      // _circle.beginFill(HEXToVBColor('#FF0000'))
+      // _circle.drawCircle(0, 0, 260)
+      // _circle.endFill()
 
 
       _background.beginFill(HEXToVBColor(color.value || '#FFFFFF'))
@@ -90,10 +93,10 @@ export default defineComponent({
       _background.x = -400
       _background.y = -400
 
-      _view.anchor.x = .5
-      _view.anchor.y = .5
-      _view.alpha = .5
-      _view.mask = _circle
+      // _view.anchor.x = .5
+      // _view.anchor.y = .5
+      // _view.alpha = .5
+      // _view.mask = _circle
       
       // _img.anchor.x = directions.x
       // _img.anchor.y = directions.y
@@ -110,8 +113,8 @@ export default defineComponent({
       // Setup events for mouse + touch using the pointer events
       
       itemContainer.addChild(_background)
-      itemContainer.addChild(_view)
-      itemContainer.addChild(_circle)
+      // itemContainer.addChild(_view)
+      // itemContainer.addChild(_circle)
       itemContainer.addChild(_img)
       itemContainer.x = canvasSize.width * .5
       itemContainer.y = canvasSize.width * .5
@@ -126,7 +129,6 @@ export default defineComponent({
           if (event.timeStamp - wheelTimeStamp.value < 100 || (event.deltaY < 0 && currentSize.value <= 0) || (event.deltaY >= 0 && currentSize.value >= 800)) return
           wheelTimeStamp.value = event.timeStamp
           currentSize.value += ((event.deltaY > 0 ? 1 : -1) * wheelUnitSize)
-          console.log(currentSize.value)
           renderCanvas()
         })
         // console.log('----test----')
@@ -137,7 +139,7 @@ export default defineComponent({
       }
     }
 
-    
+    // <input id="party" type="datetime-local" name="partydate" value="2017-06-01T08:30">
 
 
     function onDragStart(e) {
@@ -211,9 +213,6 @@ export default defineComponent({
           : cards.value[currentIndex - 1]
       }
       paramId.value = newItem.id
-
-  console.log(newItem)
-
       prepareCard(newItem.color, `${newItem.title}.png`, false)
 
       // const _currentItem = paramId 
