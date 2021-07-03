@@ -1,49 +1,54 @@
 <template lang="pug">
-.home
-  .item(v-for="item in items" :key="item.id" @click.stop="routerTo(item)")
-    img(:src="item.img")
-    .itemLabel {{ item.name }}
+.home HOME
 </template>
 
 
 
 <script lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { defineComponent } from 'vue'
-import recipes from '../Story/recipes'
-interface Recipe {
-  name: string
-  compName: string
-  id: number
-  img: string
-}
+import { Observable, of, from, fromEvent, EMPTY, NEVER, throwError, interval, timer } from 'rxjs'
+import { filter, take } from 'rxjs/operators'
 export default defineComponent({
   setup () {
-    const items = recipes.map(item => ({
-      id: item.id,
-      name: item.name,
-      img: item.images[0],
-      compName: 'Story'
-    }))
+    // const observable = new Observable((observer) => {
+    //   try {
+    //     observer.next('test1233232332')
+    //     observer.complete()
+    //   } catch (err) {
+    //     observer.error(err);
+    //   }
+    // })
+
+    // const observable = of('Jerry', 'Anna');
+    // const observable = from(['Jerry', 'Anna']);
+    // const observable = from(new Promise((resolve, reject) => {
+    //   setTimeout(() => {resolve('hello');}, 3000)
+    // }))
+    // const observable = fromEvent(document.body, 'click');
+    // const observable = interval(1000);
+      const observable = timer(1000, 2000);
 
 
-    const router = useRouter()
-    function routerTo (item: Recipe): void {
-      // router.push({ path: `/${item.path}/${item.id}` })
-      router.push({ name: item.compName, params: { id: item.id } })
-    }
-    return { items, routerTo }
+    // observable.pipe(filter(v => v.clientX > 500)).subscribe(
+      observable.pipe(take(3)).subscribe(
+      value => {
+        console.log(value);
+      },
+      error => {
+        console.log(error);
+      },
+      () => {
+        console.log('complete');
+      }
+    )
+
+
+    return {}
   }
 })
 
 </script>
 
 <style scoped lang="sass">
-  .home
-    @apply p-3 mx-auto container grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-2
-  .item
-    @apply rounded-lg bg-gray-100 shadow-md
-  .itemLabel
-    @apply bg-gray-600 text-white rounded-b-lg text-center
+
 </style>

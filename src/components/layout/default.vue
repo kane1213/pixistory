@@ -6,6 +6,7 @@
       router-link.mr-2(to="/home") Home
       router-link.mr-2(to="/about") About
       //- router-link.mr-2(to="/story") Story
+      router-link.mr-2(to="/recipe") Recipe
       router-link.mr-2(to="/roulette") Roulette
       router-link(to="/cardItems") Cards
   #mainLayout(:class="{'cardMode': routeName === 'CardItem'}")

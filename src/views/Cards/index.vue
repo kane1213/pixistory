@@ -1,16 +1,16 @@
 <template lang="pug">
 div.p-2
-  div.card-item(v-for="item in items" :key="item.id")
-    template(v-for="field in fields")
-      div.item(v-if="field === 'edit'" :key="item.id + '' + field")
-        button.bg-purple-800.text-white.rounded.px-1(@click.stop="editItem(item)") edit
-      div.item( v-else="" v-text="item[field]" :key="item.id + '' + field")
-  pagination(:count="count" :page="page" :per="per" @changePage="changingPage")
+  //- div.card-item(v-for="item in items" :key="item&&item.id ? item.id:''")
+  //-   template(v-for="field in fields")
+  //-     div.item(v-if="field === 'edit'" :key="item.id + '' + field")
+  //-       button.bg-purple-800.text-white.rounded.px-1(@click.stop="editItem(item)") edit
+  //-     div.item( v-else="" v-text="item[field]" :key="item.id + '' + field")
+  //- pagination(:count="count" :page="page" :per="per" @changePage="changingPage")
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs } from 'vue'
-import { getCardList } from '@/service/api.js'
+import { getCardList } from '../../service/api.js'
 import { useRouter } from 'vue-router'
 import pagination from '@/components/pagination.vue'
 export default defineComponent({
@@ -23,7 +23,7 @@ export default defineComponent({
     const router = useRouter()
     function fetchCards () {
       getCardList(cards.page, cards.per)
-        .then(res => {
+        .then((res:any) => {
           cards.items = res.data.items
           cards.count = res.data.count
         })

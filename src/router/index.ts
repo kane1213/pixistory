@@ -15,6 +15,15 @@ const routes: Array<RouteRecordRaw> = [
     redirect: { name: 'Home' }
   },
   {
+    path: '/recipe',
+    name: 'Recipe',
+    meta: {
+      title: 'recipe page',
+      keepAlive: true
+    },
+    component: () => import('../views/Recipe/index.vue')
+  },
+  {
     path: '/about',
     name: 'About',
     meta: {
