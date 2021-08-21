@@ -1,4 +1,5 @@
 <template lang="pug">
+div(v-text="cardTitle")
 #item(ref="itemDom")
 div.flex.items-center
   div.upload-image.mr-2(@click.stop="uploadImageEvent") UPLOAD
@@ -22,11 +23,12 @@ export default defineComponent({
   setup () {
     const route = useRoute()
     const router = useRouter()
+    if (Object.keys(route.params).length === 0) router.replace({ name: 'CardItems' })
     const itemDom = ref()
     const currentSize = ref(600)
     const wheelTimeStamp = ref(0)
     const paramId = ref(route.params.id)
-    
+    const cardTitle = ref(route.params.title)
     const itemContainer: PIXI.Container = new PIXI.Container()
     const canvasSize = reactive({ width: 0, height: 0 })
     const pagination = reactive(JSON.parse(route.params.pagination))
@@ -36,6 +38,7 @@ export default defineComponent({
     const cards = ref(JSON.parse(route.params.cards))
     const color = ref("#ffffff")
     const images = ref([])
+    const maxImgWidt = 8000
     if (Object.keys(route.params).length === 0) router.replace({ name: 'CardItems' })
     let app
     onMounted(() => {
@@ -73,7 +76,7 @@ export default defineComponent({
       // const _circle: PIXI.Graphics = new PIXI.Graphics()
 
       
-      const _scale:number = Math.min(currentSize.value / Math.max(_img.width, 800), 1);
+      const _scale:number = Math.min(currentSize.value / Math.max(_img.width, 800), 2);
 
       function HEXToVBColor(rrggbb: string) {
         rrggbb = rrggbb.replace('#', '')
@@ -126,7 +129,7 @@ export default defineComponent({
         itemDom.value.addEventListener('mouseup', onDragEnd)
         itemDom.value.addEventListener('mouseupoutside', onDragEnd)
         itemDom.value.addEventListener('wheel', event => {
-          if (event.timeStamp - wheelTimeStamp.value < 100 || (event.deltaY < 0 && currentSize.value <= 0) || (event.deltaY >= 0 && currentSize.value >= 800)) return
+          if (event.timeStamp - wheelTimeStamp.value < 100 || (event.deltaY < 0 && currentSize.value <= 0) || (event.deltaY >= 0 && currentSize.value >= maxImgWidt)) return
           wheelTimeStamp.value = event.timeStamp
           currentSize.value += ((event.deltaY > 0 ? 1 : -1) * wheelUnitSize)
           renderCanvas()
@@ -179,7 +182,7 @@ export default defineComponent({
 
 
     function uploadImageEvent () {
-      updateItemImageColorById(route.params.id, color.value, app.renderer.view.toDataURL('image/jpeg', 0.78))
+      updateItemImageColorById(paramId.value, color.value, app.renderer.view.toDataURL('image/jpeg', 0.78))
         .selectedTarget(res => {
           console.log(res)
         })
@@ -213,6 +216,7 @@ export default defineComponent({
           : cards.value[currentIndex - 1]
       }
       paramId.value = newItem.id
+      cardTitle.value = newItem.title
       prepareCard(newItem.color, `${newItem.title}.png`, false)
 
       // const _currentItem = paramId 
@@ -221,7 +225,7 @@ export default defineComponent({
 
     }
 
-    return { itemDom, uploadImageEvent, color, currentSize, renderCanvas, btnEvent }
+    return { itemDom, uploadImageEvent, color, currentSize, renderCanvas, btnEvent, cardTitle }
   }
 })
 </script>
