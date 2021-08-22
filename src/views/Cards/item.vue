@@ -143,7 +143,7 @@ export default defineComponent({
     }
 
     // <input id="party" type="datetime-local" name="partydate" value="2017-06-01T08:30">
-
+    // vscode://vscode.github-authentication/did-authenticate?windowid=1&code=dd71c6187f0b5235c350&state=83e38975-c6c8-4d78-b1cd-37970abf2a28
 
     function onDragStart(e) {
       selectedTarget.value.alpha = 0.5;
@@ -183,7 +183,7 @@ export default defineComponent({
 
     function uploadImageEvent () {
       updateItemImageColorById(paramId.value, color.value, app.renderer.view.toDataURL('image/jpeg', 0.78))
-        .selectedTarget(res => {
+        .then(res => {
           console.log(res)
         })
         .catch(err => {
