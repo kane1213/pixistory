@@ -1,19 +1,30 @@
 <template lang="pug">
-div.text-3xl.p-2.bg-black.text-white(v-text="cardTitle")
+div.p-2
+  div.flex
+    label.mr-1 TITLE
+    input.border(type="text" v-model="cardTitle")
+  div.flex
+    label.mr-1 Chinese
+    input.border(type="text" v-model="cardChinese")
+  select(v-model="cardType")
+    option(value='1') ONE
+    option(value='2') TWO
+    option(value='3') THREE
+  input(type="file" ref="imageInput" @change="imageChangeEvent")
 #item(ref="itemDom")
 div.flex.items-center
   div.upload-image.mr-2(@click.stop="uploadImageEvent") UPLOAD
   div
-    input(type="color" v-model="color" @change="renderCanvas")
-  button.btn.ml-auto(@click.stop="btnEvent('previous')") 上一筆
-  button.btn.mx-2(@click.stop="btnEvent('next')") 下一筆
+    
+    button.bg-yellow-200.mx-1.px-2(@click.stop="setColor('yellow')") YELLOW
+    button.bg-blue-200.mx-1.px-2(@click.stop="setColor('blue')") BLUE
   button.btn.mx-2(@click.stop="btnEvent('back')") 返回
 </template>
 <script lang="ts">
 import { defineComponent, ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import * as PIXI from 'pixi.js'
-import { updateItemImageColorById, getCardList } from '@/service/api.js' // updateItemImageById, updateItemColorById
+import { addCardItem } from '@/service/api.js' // updateItemImageById, updateItemColorById
 interface RoulettePrize {
   label: string,
   occupy: number,
@@ -23,23 +34,21 @@ export default defineComponent({
   setup () {
     const route = useRoute()
     const router = useRouter()
-    if (Object.keys(route.params).length === 0) router.replace({ name: 'CardItems' })
     const itemDom = ref()
+    const imageInput = ref()
     const currentSize = ref(600)
     const wheelTimeStamp = ref(0)
-    const paramId = ref(route.params.id)
-    const cardTitle = ref(route.params.title)
+    const cardTitle = ref('')
+    const cardType = ref(1)
+    const cardChinese = ref('')
     const itemContainer: PIXI.Container = new PIXI.Container()
     const canvasSize = reactive({ width: 0, height: 0 })
-    const pagination = reactive(JSON.parse(route.params.pagination))
     
     const selectedTarget = ref()
     const startPostion = reactive({ x: 0, y: 0, imgx: 0, imgy: 0})
-    const cards = ref(JSON.parse(route.params.cards))
-    const color = ref("#ffffff")
-    const images = ref([])
+    const color = ref('#fffde3')
+    const imageBase64 = ref('')
     const maxImgWidt = 8000
-    if (Object.keys(route.params).length === 0) router.replace({ name: 'CardItems' })
     let app
     onMounted(() => {
       const mainLayout: HTMLElement = document.getElementById('mainLayout')!
@@ -54,28 +63,27 @@ export default defineComponent({
       });
       
       app.stage.addChild(itemContainer)
-      prepareCard(route.params.color, `${route.params.title}.png`, true)
+        // prepareCard(route.params.color, `${route.params.title}.png`, true)
         // ${route.params.title}.png
     })
 
     function prepareCard (paramColor, paramImage, isFirstTime) {
-      color.value = paramColor
-      images.value = [`/cards/${paramImage}`] // , '/cards/mountains.jpg'
-      app.loader
-        .add(isFirstTime ? images.value : images.value.slice(1, -1))
-        .load((loader, resources) => {
-          renderCanvas()
-        })
+      // color.value = paramColor
+      // images.value = [`/cards/${paramImage}`] // , '/cards/mountains.jpg'
+      // app.loader
+      //   .add(isFirstTime ? images.value : images.value.slice(1, -1))
+      //   .load((loader, resources) => {
+      //     renderCanvas()
+      //   })
     }
     
 
     function renderCanvas () {
-      const _img: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.from(images.value[0]))
+      if (!imageBase64.value) return
+      const _img: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.from(imageBase64.value))
       // const _view: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.from(images[1]))
       const _background: PIXI.Graphics = new PIXI.Graphics()
       // const _circle: PIXI.Graphics = new PIXI.Graphics()
-
-      
       const _scale:number = Math.min(currentSize.value / Math.max(_img.width, 800), 2);
 
       function HEXToVBColor(rrggbb: string) {
@@ -179,53 +187,41 @@ export default defineComponent({
         // selectedTarget.value.parent.toLocal(e.global, null, selectedTarget.value.position);
     }
 
+    async function btnEvent () {
+      router.push({ name: 'CardItems' })
+    }
 
+    function imageChangeEvent(event) {
+
+      // var FR= new FileReader();
+    
+      // FR.addEventListener("load", function(e) {
+      //   document.getElementById("img").src       = e.target.result;
+      //   document.getElementById("b64").innerHTML = e.target.result;
+      // }); 
+      
+      // FR.readAsDataURL( this.files[0] );
+
+
+      const _fileReader = new FileReader()
+      _fileReader.addEventListener('load', evt => {
+          imageBase64.value = evt.target.result;
+          renderCanvas();
+        })
+      _fileReader.readAsDataURL(event.target.files[0])
+    }
+
+    function setColor (_color: string) {
+      color.value = _color ==='yellow' ? '#fffde3' : '#f1f0ff';
+      renderCanvas()
+    }
 
     function uploadImageEvent () {
-      updateItemImageColorById(paramId.value, color.value, app.renderer.view.toDataURL('image/jpeg', 0.78))
-        .then(res => {
-          console.log(res)
-        })
-        .catch(err => {
-          console.log(err)
-        })
+      // title: string, chinese: string, color: string, base64: string, type: number
+      addCardItem({ title: cardTitle.value, color: color.value, chinese: cardChinese.value, base64: app.renderer.view.toDataURL('image/jpeg', 0.78), type: +cardType.value });
     }
 
-    async function btnEvent (eventName) {
-
-      if (eventName === 'back') { 
-        router.replace({ name: 'CardItems' , params: {"pagination": JSON.stringify(pagination)}})
-        return
-      }
-      const currentIndex = cards.value.findIndex(card => card.id == paramId.value)
-      let newItem = null
-      if (pagination.page === 1 && currentIndex === 0 && eventName === 'previous') return
-      else if (pagination.page < 4 && currentIndex === pagination.per -1 && eventName === 'next') {
-        pagination.page += 1
-        const res = await getCardList(pagination.page, pagination.per)
-        cards.value = res.data.items
-        newItem = cards[0];
-      } else if (pagination.page > 1 && currentIndex === 0 && eventName === 'previous') {
-        pagination.page -= 1
-        const res = await getCardList(pagination.page, pagination.per)
-        cards.value = res.data.items
-        newItem = cards[0]
-      } else {
-        newItem = (eventName === 'next') 
-          ? cards.value[currentIndex + 1]
-          : cards.value[currentIndex - 1]
-      }
-      paramId.value = newItem.id
-      cardTitle.value = newItem.title
-      prepareCard(newItem.color, `${newItem.title}.png`, false)
-
-      // const _currentItem = paramId 
-
-      // prepareCard(route.params.color, `${route.params.title}.png`)
-
-    }
-
-    return { itemDom, uploadImageEvent, color, currentSize, renderCanvas, btnEvent, cardTitle }
+    return { itemDom, imageInput, color, currentSize, renderCanvas, btnEvent, cardTitle, cardChinese, cardType, imageChangeEvent, setColor, uploadImageEvent }
   }
 })
 </script>

@@ -7,3 +7,5 @@ export const updateItemImageById = (id, base64) => ajax(`/card/updateImage/${id}
 export const updateItemColorById = (id, color) => ajax(`/card/updateColor/${id}`, 'put', { color }, true)
 
 export const updateItemImageColorById = (id, color, base64) => ajax(`/card/updateImageColor/${id}`, 'put', { base64, color }, true)
+
+export const addCardItem = data => ajax('/card/addNewItem', 'post', data, true)
