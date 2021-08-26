@@ -8,6 +8,7 @@ div.flex.items-center
   button.btn.ml-auto(@click.stop="btnEvent('previous')") 上一筆
   button.btn.mx-2(@click.stop="btnEvent('next')") 下一筆
   button.btn.mx-2(@click.stop="btnEvent('back')") 返回
+  img(v-if="cardUploadImage" :srcl="cardUploadImage")
 </template>
 <script lang="ts">
 import { defineComponent, ref, reactive, onMounted } from 'vue'
@@ -29,6 +30,7 @@ export default defineComponent({
     const wheelTimeStamp = ref(0)
     const paramId = ref(route.params.id)
     const cardTitle = ref(route.params.title)
+    const cardUploadImage = ref(route.params.image)
     const itemContainer: PIXI.Container = new PIXI.Container()
     const canvasSize = reactive({ width: 0, height: 0 })
     const pagination = reactive(JSON.parse(route.params.pagination))
@@ -225,7 +227,7 @@ export default defineComponent({
 
     }
 
-    return { itemDom, uploadImageEvent, color, currentSize, renderCanvas, btnEvent, cardTitle }
+    return { itemDom, uploadImageEvent, color, currentSize, renderCanvas, btnEvent, cardTitle, cardUploadImage }
   }
 })
 </script>

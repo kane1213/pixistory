@@ -43,8 +43,8 @@ export default defineComponent({
     }
 
     function editItem (item: {id: number, title: string, chinese: string, type: number, image: string, color: string }) {
-      const { id, title, color } = item
-      router.push({ name: 'CardItem', params: { id, title, color, cards: JSON.stringify(cards.items), pagination: JSON.stringify({ page: cards.page, per: cards.per }) }})
+      const { id, title, color, image } = item
+      router.push({ name: 'CardItem', params: { id, title, color, image, cards: JSON.stringify(cards.items), pagination: JSON.stringify({ page: cards.page, per: cards.per }) }})
     }
 
     function addEvent () {
