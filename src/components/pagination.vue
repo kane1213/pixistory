@@ -42,8 +42,10 @@ export default defineComponent({
 
     function arrowEvent (deti: number) {
       const newPage = props.page + deti
-      if (newPage === 0 || newPage > pages.value.slice(-1)[0]) return
-      context.emit('changePage', newPage)
+      if (pages.value) {
+        if (newPage === 0 || newPage > pages.value.slice(-1)[0]) return
+        context.emit('changePage', newPage)
+      }
     }
 
     return { pages, pageEvent, arrowEvent }

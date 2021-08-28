@@ -18,13 +18,13 @@ div.flex.items-center
     
     button.bg-yellow-200.mx-1.px-2(@click.stop="setColor('yellow')") YELLOW
     button.bg-blue-200.mx-1.px-2(@click.stop="setColor('blue')") BLUE
-  button.btn.mx-2(@click.stop="btnEvent('back')") 返回
+  button.btn.mx-2(@click.stop="btnEvent") 返回
 </template>
 <script lang="ts">
 import { defineComponent, ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import * as PIXI from 'pixi.js'
-import { addCardItem } from '@/service/api.js' // updateItemImageById, updateItemColorById
+import { addCardItem } from '../../service/api.js' // updateItemImageById, updateItemColorById
 interface RoulettePrize {
   label: string,
   occupy: number,
@@ -205,8 +205,13 @@ export default defineComponent({
 
       const _fileReader = new FileReader()
       _fileReader.addEventListener('load', evt => {
-          imageBase64.value = evt.target.result;
-          renderCanvas();
+          if (evt && evt.target && evt.target.result) {
+            const _b64: string | ArrayBuffer = evt.target.result
+            if (typeof _b64 === 'string') {
+              imageBase64.value = _b64;
+              renderCanvas();
+            }
+          }
         })
       _fileReader.readAsDataURL(event.target.files[0])
     }

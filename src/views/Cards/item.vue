@@ -14,7 +14,7 @@ div.flex.items-center
 import { defineComponent, ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import * as PIXI from 'pixi.js'
-import { updateItemImageColorById, getCardList } from '@/service/api.js' // updateItemImageById, updateItemColorById
+import { updateItemImageColorById, getCardList } from '../../service/api.js' // updateItemImageById, updateItemColorById
 interface RoulettePrize {
   label: string,
   occupy: number,
@@ -33,11 +33,22 @@ export default defineComponent({
     const cardUploadImage = ref(route.params.image)
     const itemContainer: PIXI.Container = new PIXI.Container()
     const canvasSize = reactive({ width: 0, height: 0 })
-    const pagination = reactive(JSON.parse(route.params.pagination))
-    
+    const pagination = reactive({ page: 1, per: 10})
+    // const _tmp = JSON.parse(route.params.pagination)
     const selectedTarget = ref()
     const startPostion = reactive({ x: 0, y: 0, imgx: 0, imgy: 0})
-    const cards = ref(JSON.parse(route.params.cards))
+    const cards = ref([])
+    // try {
+    //   const _tmpArr:any = JSON.parse(route.params.cards)
+    //   if (Array.isArray(_tmpArr)) {
+    //     cards.value.concat(_tmpArr)
+    //   }
+      
+    // } catch (err => {
+    //   // cards = ref()
+
+    // }
+    
     const color = ref("#ffffff")
     const images = ref([])
     const maxImgWidt = 8000
@@ -60,9 +71,9 @@ export default defineComponent({
         // ${route.params.title}.png
     })
 
-    function prepareCard (paramColor, paramImage, isFirstTime) {
+    function prepareCard (paramColor, paramImage: string, isFirstTime) {
       color.value = paramColor
-      images.value = [`/cards/${paramImage}`] // , '/cards/mountains.jpg'
+      // images.value = [`/cards/${paramImage}`] // , '/cards/mountains.jpg'
       app.loader
         .add(isFirstTime ? images.value : images.value.slice(1, -1))
         .load((loader, resources) => {
@@ -199,27 +210,29 @@ export default defineComponent({
         router.replace({ name: 'CardItems' , params: {"pagination": JSON.stringify(pagination)}})
         return
       }
-      const currentIndex = cards.value.findIndex(card => card.id == paramId.value)
+      const currentIndex = cards.value.findIndex(card => card['id'] == paramId.value)
       let newItem = null
       if (pagination.page === 1 && currentIndex === 0 && eventName === 'previous') return
       else if (pagination.page < 4 && currentIndex === pagination.per -1 && eventName === 'next') {
         pagination.page += 1
-        const res = await getCardList(pagination.page, pagination.per)
-        cards.value = res.data.items
+        const res: any = await getCardList(pagination.page, pagination.per)
+        cards.value = res['data']['items']
         newItem = cards[0];
       } else if (pagination.page > 1 && currentIndex === 0 && eventName === 'previous') {
         pagination.page -= 1
-        const res = await getCardList(pagination.page, pagination.per)
-        cards.value = res.data.items
+        const res:any = await getCardList(pagination.page, pagination.per)
+        cards.value = res['data']['items']
         newItem = cards[0]
       } else {
         newItem = (eventName === 'next') 
           ? cards.value[currentIndex + 1]
           : cards.value[currentIndex - 1]
       }
-      paramId.value = newItem.id
-      cardTitle.value = newItem.title
-      prepareCard(newItem.color, `${newItem.title}.png`, false)
+      if (newItem) {
+        paramId.value = newItem['id']
+        cardTitle.value = newItem['title']
+        prepareCard(newItem['color'], `${newItem['title']}.png`, false)
+      }
 
       // const _currentItem = paramId 
 
