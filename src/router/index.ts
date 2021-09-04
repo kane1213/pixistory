@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
+import store from '../store/index'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -59,12 +60,28 @@ const routes: Array<RouteRecordRaw> = [
     path: '/add',
     name: 'CardAdd',
     component: () => import('../views/Cards/add.vue'),
+  },
+  {
+    path: '/categoryItems',
+    name: 'Categories',
+    component: () => import('../views/Categories/index.vue')
+  },
+  ,
+  {
+    path: '/categoryItem',
+    name: 'CategoryItem',
+    component: () => import('../views/Categories/item.vue'),
   }
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.name !== 'CategoryItem' && !!store.state.editingItem) store.commit('setEditingItem')
+  next()
 })
 
 export default router

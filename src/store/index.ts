@@ -3,7 +3,8 @@ import { createStore } from "vuex";
 export default createStore({
   state: {
     isMobile: false,
-    isLoading: false
+    isLoading: false,
+    editingItem: null
   },
   mutations: {
     setDeviceMode(state, value) {
@@ -11,6 +12,9 @@ export default createStore({
     },
     setLoadingStatus (state, value) {
       state.isLoading = value
+    },
+    setEditingItem (state, value = null) {
+      state.editingItem = value
     }
   },
   actions: {

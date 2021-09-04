@@ -1,33 +1,37 @@
 <template lang="pug">
 div.p-2
+  select(v-model="typeValue" @change="fetchCards" class="w-full mb-2 py-2")
+    option(v-for="(item, i) in typeList" :key="item" :value="i") {{item}}
   button.bg-blue-500.text-white.p-2.mb-2(@click.stop="addEvent") ADD
   div.card-item(v-for="item in items" :key="item['id']")
     template(v-for="field in fields")
       div.item(v-if="field === 'edit'" :key="item['id'] + '' + field")
         button.bg-purple-800.text-white.rounded.px-1(@click.stop="editItem(item)") edit
       div.item( v-else="" v-text="item[field]" :key="item['id'] + '_' + field")
-  pagination(:count="count" :page="page" :per="per" @changePage="changingPage")
-  //- div {{ page }} - {{ per }} - {{ count }}
-  //- Pagination(:records="count" :v-model="page" :per-page="per" @paginate="changingPage")
-  //- <pagination v-model="page" :records="500" :per-page="25" @paginate="myCallback"/>
+  Paginator(:rows="per" :totalRecords="count" @page="changingPage")
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from 'vue'
+import { defineComponent, reactive, ref, toRefs } from 'vue'
 import { getCardList } from '../../service/api.js'
 import { useRouter } from 'vue-router'
-// import Pagination from 'v-pagination-3'
-import pagination from '@/components/pagination.vue'
+
+interface PageObj {
+  page: number, first: number, rows: number, pageCount: number
+}
+
 export default defineComponent({
-  components: {
-    pagination
-  },
+  // components: {
+  //   pagination
+  // },
   setup () {
     const cards = reactive({ items: [], count: 0, page: 1, per: 12 })
     const fields = ['id', 'title', 'chinese', 'type', 'edit']
+    const typeList = ['ALL', 'ANIMAL', 'FOOD', 'ENVIRONMENT']
+    const typeValue = ref(0)
     const router = useRouter()
     function fetchCards () {
-      getCardList(cards.page, cards.per)
+      getCardList(cards.page, cards.per, typeValue.value > 0 ? `&type=${typeValue.value}` : '')
         .then((res: any) => {
           cards.items = res.data.items
           cards.count = res.data.count
@@ -37,8 +41,9 @@ export default defineComponent({
         })
     }
 
-    function changingPage (page: number) {
-      cards.page = page
+    function changingPage (item: PageObj) {
+      cards.page = item.page + 1
+      // cards.page = page
       fetchCards()
     }
 
@@ -53,7 +58,7 @@ export default defineComponent({
 
     fetchCards()
 
-    return { ...toRefs(cards), fields, changingPage, editItem, addEvent }
+    return { ...toRefs(cards), fields, changingPage, editItem, addEvent, typeList, typeValue, fetchCards }
   }
 })
 </script>

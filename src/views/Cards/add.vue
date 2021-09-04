@@ -7,9 +7,7 @@ div.p-2
     label.mr-1 Chinese
     input.border(type="text" v-model="cardChinese")
   select(v-model="cardType")
-    option(value='1') ONE
-    option(value='2') TWO
-    option(value='3') THREE
+    option(v-for="(item, i) in typeList" :key="item" :value="i + 1") {{item}}
   input(type="file" ref="imageInput" @change="imageChangeEvent")
 #item(ref="itemDom")
 div.flex.items-center
@@ -43,6 +41,7 @@ export default defineComponent({
     const cardChinese = ref('')
     const itemContainer: PIXI.Container = new PIXI.Container()
     const canvasSize = reactive({ width: 0, height: 0 })
+    const typeList = ['ANIMAL', 'FOOD', 'ENVIRONMENT']
     
     const selectedTarget = ref()
     const startPostion = reactive({ x: 0, y: 0, imgx: 0, imgy: 0})
@@ -226,7 +225,7 @@ export default defineComponent({
       addCardItem({ title: cardTitle.value, color: color.value, chinese: cardChinese.value, base64: app.renderer.view.toDataURL('image/jpeg', 0.78), type: +cardType.value });
     }
 
-    return { itemDom, imageInput, color, currentSize, renderCanvas, btnEvent, cardTitle, cardChinese, cardType, imageChangeEvent, setColor, uploadImageEvent }
+    return { itemDom, imageInput, color, currentSize, renderCanvas, btnEvent, cardTitle, cardChinese, cardType, imageChangeEvent, setColor, uploadImageEvent, typeList }
   }
 })
 </script>

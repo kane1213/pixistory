@@ -1,6 +1,10 @@
 import ajax from './ajax';
 
-export const getCardList = (page = 1, per = 10) => ajax(`/card/items?page=${page}&per=${per}`);
+export const getCardList = (page = 1, per = 10, params = '') => ajax(`/card/items?page=${page}&per=${per}${params}`);
+
+export const getCategoryOptions = () => ajax('/category/categoryOptions');
+
+export const getCategories = () => ajax('/category/items');
 
 export const updateItemImageById = (id, base64) => ajax(`/card/updateImage/${id}`, 'put', { base64 }, true)
 

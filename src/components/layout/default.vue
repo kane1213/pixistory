@@ -7,7 +7,8 @@
       router-link.mr-2(to="/about") About
       //- router-link.mr-2(to="/story") Story
       router-link.mr-2(to="/roulette") Roulette
-      router-link(to="/cardItems") Cards
+      router-link.mr-2(to="/cardItems") Cards
+      router-link(to="/categoryItems") Categories
   #mainLayout(:class="{'cardMode': routeName === 'CardItem'}")
     slot
   footerComp
