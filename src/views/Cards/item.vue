@@ -73,7 +73,7 @@ export default defineComponent({
 
     function prepareCard (paramColor, paramImage: string, isFirstTime) {
       color.value = paramColor
-      // imagues.value = [`/cards/${paramImage}`] // , '/cards/mountains.jpg'
+      images.value = [`/cards/${paramImage}`] // , '/cards/mountains.jpg'
       app.loader
         .add(isFirstTime ? images.value : images.value.slice(1, -1))
         .load((loader, resources) => {

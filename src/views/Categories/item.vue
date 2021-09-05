@@ -5,12 +5,17 @@ div.input-fields(v-for="ipField in inputFields" :key="ipField.key")
     input(v-if="['title', 'chinese', 'type', 'id'].includes(ipField.key)" type="text" :disabled="ipField.disabled" v-model="item[ipField.key]")
     template(v-else-if="ipField.key==='image'")
       input(v-if="!item[ipField.key]" type="file" @change="inputToBase64Event")
-      img(v-else :src="item[ipField.key]")
+      div.relative(v-else)
+        button.bg-black.text-white.rounded.px-2.absolute.right-2.top-2(@click.stop="removeItemImageEvent") remove
+        img(:src="item[ipField.key]")
+button.confirm-button(@click.stop="confirmItemEvent" :disabled="!isAbleToConfirm") CONFIRM
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue' // , reactive, onMounted
+import { defineComponent, ref, computed } from 'vue' // , reactive, onMounted
 import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
+import { addCategory, updateCategory } from '../../service/api.js';
 export default defineComponent({
   setup () {
     const inputFields = [
@@ -22,6 +27,8 @@ export default defineComponent({
     ]
     const item = ref({})
     const store = useStore()
+    const router = useRouter()
+    const isAbleToConfirm = computed(() => inputFields.every(({ key }) => (item.value[key] || key === 'id')))
     if (store.state.editingItem !== null) {
       Object.entries(store.state.editingItem).forEach(([key, value]) => {
         item.value[key] = value
@@ -69,21 +76,18 @@ export default defineComponent({
         item.value.image = canvas.toDataURL()
 
       }
-      
-
-
-
-      // async function Main() {
-      //   const file = document.querySelector('#myfile').files[0];
-      //   console.log(await toBase64(file));
-      // }
-
-      // Main();
-
-
-
     }
-    return { inputFields, inputToBase64Event, item }
+    function removeItemImageEvent () {
+      item.value.image = null
+    }
+
+    function confirmItemEvent () {
+      (item.value.id ? updateCategory : addCategory)(item.value)
+        .then(res => {
+          router.replace({ name: 'Categories' })
+        })
+    }
+    return { inputFields, inputToBase64Event, removeItemImageEvent, confirmItemEvent, item, isAbleToConfirm }
   }
 })
 </script>
@@ -94,4 +98,6 @@ export default defineComponent({
   > div
     > input[type=text]
       @apply w-full border
+.confirm-button
+  @apply mt-5 mx-auto table bg-blue-800 text-white py-2 rounded w-4/5
 </style>

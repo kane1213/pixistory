@@ -6,14 +6,15 @@ div.p-2
   div.flex
     label.mr-1 Chinese
     input.border(type="text" v-model="cardChinese")
-  select(v-model="cardType")
-    option(v-for="(item, i) in typeList" :key="item" :value="i + 1") {{item}}
+  select(v-model="cardType" class="w-full mb-2 py-2")
+    option(v-for="(item, i) in typeOptions" :key="item" :value="item.value") {{item.label}}({{item.value}})
+  //- select(v-model="cardType")
+  //-   option(v-for="(item, i) in typeList" :key="item" :value="i + 1") {{item}}
   input(type="file" ref="imageInput" @change="imageChangeEvent")
 #item(ref="itemDom")
 div.flex.items-center
   div.upload-image.mr-2(@click.stop="uploadImageEvent") UPLOAD
   div
-    
     button.bg-yellow-200.mx-1.px-2(@click.stop="setColor('yellow')") YELLOW
     button.bg-blue-200.mx-1.px-2(@click.stop="setColor('blue')") BLUE
   button.btn.mx-2(@click.stop="btnEvent") 返回
@@ -21,8 +22,9 @@ div.flex.items-center
 <script lang="ts">
 import { defineComponent, ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useStore } from 'vuex'
 import * as PIXI from 'pixi.js'
-import { addCardItem } from '../../service/api.js' // updateItemImageById, updateItemColorById
+import { addCardItem, getCategoryOptions } from '../../service/api.js' // updateItemImageById, updateItemColorById
 interface RoulettePrize {
   label: string,
   occupy: number,
@@ -30,7 +32,8 @@ interface RoulettePrize {
 }
 export default defineComponent({
   setup () {
-    const route = useRoute()
+    // const route = useRoute()
+    const store = useStore()
     const router = useRouter()
     const itemDom = ref()
     const imageInput = ref()
@@ -42,12 +45,19 @@ export default defineComponent({
     const itemContainer: PIXI.Container = new PIXI.Container()
     const canvasSize = reactive({ width: 0, height: 0 })
     const typeList = ['ANIMAL', 'FOOD', 'ENVIRONMENT']
+    const typeOptions = [...store.state.options.type]
     
     const selectedTarget = ref()
     const startPostion = reactive({ x: 0, y: 0, imgx: 0, imgy: 0})
     const color = ref('#fffde3')
     const imageBase64 = ref('')
     const maxImgWidt = 8000
+    // getCategoryOptions()
+    //   .then(({ data }) => {
+    //     data.forEach((item: any) => { typeOptions.push(item) })
+    //   })
+
+
     let app
     onMounted(() => {
       const mainLayout: HTMLElement = document.getElementById('mainLayout')!
@@ -225,7 +235,7 @@ export default defineComponent({
       addCardItem({ title: cardTitle.value, color: color.value, chinese: cardChinese.value, base64: app.renderer.view.toDataURL('image/jpeg', 0.78), type: +cardType.value });
     }
 
-    return { itemDom, imageInput, color, currentSize, renderCanvas, btnEvent, cardTitle, cardChinese, cardType, imageChangeEvent, setColor, uploadImageEvent, typeList }
+    return { itemDom, imageInput, color, currentSize, renderCanvas, btnEvent, cardTitle, cardChinese, cardType, imageChangeEvent, setColor, uploadImageEvent, typeList, typeOptions }
   }
 })
 </script>

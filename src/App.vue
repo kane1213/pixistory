@@ -23,6 +23,11 @@ const timeout = ref(0)
 //     }, 100)
 //   }
 // })
+if (store.state.options.type.length === 0) {
+  store.dispatch('actSetTypeOptions')
+}
+
+
 </script>
 <style lang="sass">
 @import '@/scss/main.scss'

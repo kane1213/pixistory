@@ -1,35 +1,45 @@
 <template lang="pug">
 div.p-2
   select(v-model="typeValue" @change="fetchCards" class="w-full mb-2 py-2")
-    option(v-for="(item, i) in typeList" :key="item" :value="i") {{item}}
+    option(v-for="(item, i) in typeOptions" :key="item" :value="item.value") {{item.label}}({{item.value}})
   button.bg-blue-500.text-white.p-2.mb-2(@click.stop="addEvent") ADD
-  div.card-item(v-for="item in items" :key="item['id']")
-    template(v-for="field in fields")
-      div.item(v-if="field === 'edit'" :key="item['id'] + '' + field")
-        button.bg-purple-800.text-white.rounded.px-1(@click.stop="editItem(item)") edit
-      div.item( v-else="" v-text="item[field]" :key="item['id'] + '_' + field")
+  Fields(:heads="fields" :items="cardItems")
+    template(v-slot:custom1="{ params }")
+      button.bg-blue-200.rounded.px-2.py-05.mr-1(@click.stop="editItem(params.item)") EDIT
+      button.bg-blue-200.rounded.px-2.py-05(@click.stop="removeItem(params.item)") REMOVE
   Paginator(:rows="per" :totalRecords="count" @page="changingPage")
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, toRefs } from 'vue'
-import { getCardList } from '../../service/api.js'
+import { defineComponent, reactive, ref, toRefs, computed } from 'vue'
+import { getCardList, removeCardById } from '../../service/api.js'
 import { useRouter } from 'vue-router'
-
+import { useStore } from 'vuex'
+import Fields from '../../components/fields.vue';
 interface PageObj {
   page: number, first: number, rows: number, pageCount: number
 }
 
 export default defineComponent({
-  // components: {
-  //   pagination
-  // },
+  components: {
+    Fields
+  },
   setup () {
     const cards = reactive({ items: [], count: 0, page: 1, per: 12 })
-    const fields = ['id', 'title', 'chinese', 'type', 'edit']
-    const typeList = ['ALL', 'ANIMAL', 'FOOD', 'ENVIRONMENT']
+    // const fields = ['id', 'title', 'chinese', 'type', 'edit']
+    const cardItems = computed(() => cards.items.map(item => ({ ...item, typeName: `${typeObj.value[item.type]}(${item.type})` })))
+    const fields = [
+      { key: 'id', label: 'ID' },
+      { key: 'title', label: '英文' },
+      { key: 'chinese', label: '中文' },
+      { key: 'typeName', label: '值' },
+      { key: 'custom1', label: '編輯', width: 'auto' }
+    ]
+    const store = useStore()
     const typeValue = ref(0)
     const router = useRouter()
+    const typeOptions = [{ label: '全部', text: 'ALL', value: 0 }].concat(store.state.options.type)
+    const typeObj = computed(() => typeOptions.reduce((acc, cur) => ({ ...acc, [cur.value]: cur.label }), {}) )
     function fetchCards () {
       getCardList(cards.page, cards.per, typeValue.value > 0 ? `&type=${typeValue.value}` : '')
         .then((res: any) => {
@@ -52,13 +62,20 @@ export default defineComponent({
       router.push({ name: 'CardItem', params: { id, title, color, image, cards: JSON.stringify(cards.items), pagination: JSON.stringify({ page: cards.page, per: cards.per }) }})
     }
 
+    function removeItem (item: {id: number, title: string, chinese: string, type: number, image: string, color: string }) {
+      removeCardById(item.id)
+      setTimeout(fetchCards, 5000)
+    }
+
     function addEvent () {
       router.push({ name: 'CardAdd' })
     }
 
     fetchCards()
 
-    return { ...toRefs(cards), fields, changingPage, editItem, addEvent, typeList, typeValue, fetchCards }
+    
+
+    return { ...toRefs(cards), cardItems, fields, changingPage, editItem, removeItem, addEvent, typeValue, fetchCards, typeOptions }
   }
 })
 </script>
