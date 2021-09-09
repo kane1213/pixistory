@@ -58,8 +58,8 @@ export default defineComponent({
     }
 
     function editItem (item: {id: number, title: string, chinese: string, type: number, image: string, color: string }) {
-      const { id, title, color, image } = item
-      router.push({ name: 'CardItem', params: { id, title, color, image, cards: JSON.stringify(cards.items), pagination: JSON.stringify({ page: cards.page, per: cards.per }) }})
+      store.commit('setEditingItem', item)
+      router.push({ name: 'EditCardItem' })
     }
 
     function removeItem (item: {id: number, title: string, chinese: string, type: number, image: string, color: string }) {

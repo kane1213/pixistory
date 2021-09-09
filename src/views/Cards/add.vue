@@ -10,8 +10,10 @@ div.p-2
     option(v-for="(item, i) in typeOptions" :key="item" :value="item.value") {{item.label}}({{item.value}})
   //- select(v-model="cardType")
   //-   option(v-for="(item, i) in typeList" :key="item" :value="i + 1") {{item}}
-  input(type="file" ref="imageInput" @change="imageChangeEvent")
+  input(type="file" v-if="!imageBase64 && !oldImageBase64" ref="imageInput" @change="imageChangeEvent")
+  button(v-else @click.stop="cleanImageBase64") remove
 #item(ref="itemDom")
+img(v-if="oldImageBase64" :src="oldImageBase64")
 div.flex.items-center
   div.upload-image.mr-2(@click.stop="uploadImageEvent") UPLOAD
   div
@@ -51,12 +53,18 @@ export default defineComponent({
     const startPostion = reactive({ x: 0, y: 0, imgx: 0, imgy: 0})
     const color = ref('#fffde3')
     const imageBase64 = ref('')
+    const oldImageBase64 = ref('')
     const maxImgWidt = 8000
     // getCategoryOptions()
     //   .then(({ data }) => {
     //     data.forEach((item: any) => { typeOptions.push(item) })
     //   })
 
+    if (store.state.editingItem) {
+      cardTitle.value = store.state.editingItem.title
+      cardChinese.value = store.state.editingItem.chinese
+      oldImageBase64.value = store.state.editingItem.image
+    }
 
     let app
     onMounted(() => {
@@ -140,17 +148,12 @@ export default defineComponent({
       itemContainer.y = canvasSize.width * .5
       if (itemDom.value) {
         const element: HTMLDivElement = itemDom.value!
-        const wheelUnitSize = 50
+        
         element.appendChild(app.view)
         itemDom.value.addEventListener('mousedown', onDragStart)
         itemDom.value.addEventListener('mouseup', onDragEnd)
         itemDom.value.addEventListener('mouseupoutside', onDragEnd)
-        itemDom.value.addEventListener('wheel', event => {
-          if (event.timeStamp - wheelTimeStamp.value < 100 || (event.deltaY < 0 && currentSize.value <= 0) || (event.deltaY >= 0 && currentSize.value >= maxImgWidt)) return
-          wheelTimeStamp.value = event.timeStamp
-          currentSize.value += ((event.deltaY > 0 ? 1 : -1) * wheelUnitSize)
-          renderCanvas()
-        })
+        itemDom.value.addEventListener('wheel', wheelEvent)
         // console.log('----test----')
         // console.log(itemDom.value)
         // itemDom.value.onscroll = function(e){
@@ -172,6 +175,14 @@ export default defineComponent({
       startPostion.imgx = selectedTarget.value.x
       startPostion.imgy = selectedTarget.value.y
       itemDom.value.addEventListener('mousemove', onDragMove);
+    }
+
+    function wheelEvent (event) {
+      const wheelUnitSize = 50
+      if (event.timeStamp - wheelTimeStamp.value < 100 || (event.deltaY < 0 && currentSize.value <= 0) || (event.deltaY >= 0 && currentSize.value >= maxImgWidt)) return
+      wheelTimeStamp.value = event.timeStamp
+      currentSize.value += ((event.deltaY > 0 ? 1 : -1) * wheelUnitSize)
+      renderCanvas()
     }
 
     // Restore the dragTarget bunny's alpha & deregister listener when the bunny is
@@ -235,7 +246,20 @@ export default defineComponent({
       addCardItem({ title: cardTitle.value, color: color.value, chinese: cardChinese.value, base64: app.renderer.view.toDataURL('image/jpeg', 0.78), type: +cardType.value });
     }
 
-    return { itemDom, imageInput, color, currentSize, renderCanvas, btnEvent, cardTitle, cardChinese, cardType, imageChangeEvent, setColor, uploadImageEvent, typeList, typeOptions }
+    function cleanImageBase64 () {
+      if (oldImageBase64.value) {
+        oldImageBase64.value = ''
+      } else {
+        itemDom.value.removeEventListener('mousedown', onDragStart)
+        itemDom.value.removeEventListener('mouseup', onDragEnd)
+        itemDom.value.removeEventListener('mouseupoutside', onDragEnd)
+        itemDom.value.removeEventListener('wheel', wheelEvent)
+        imageBase64.value = ''
+        itemDom.value.innerHTML = ''
+      }
+    }
+
+    return { itemDom, imageInput, color, currentSize, renderCanvas, btnEvent, cardTitle, cardChinese, cardType, imageChangeEvent, setColor, uploadImageEvent, typeList, typeOptions, imageBase64, oldImageBase64, cleanImageBase64 }
   }
 })
 </script>

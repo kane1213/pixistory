@@ -57,6 +57,11 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import('../views/Cards/item.vue'),
   },
   {
+    path: '/editCardItem',
+    name: 'EditCardItem',
+    component: () => import('../views/Cards/add.vue'),
+  },
+  {
     path: '/add',
     name: 'CardAdd',
     component: () => import('../views/Cards/add.vue'),
@@ -80,7 +85,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.name !== 'CategoryItem' && !!store.state.editingItem) store.commit('setEditingItem')
+  if (!['CategoryItem', 'EditCardItem'].includes(to.name) && !!store.state.editingItem) store.commit('setEditingItem')
   next()
 })
 
