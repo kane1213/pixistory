@@ -11,7 +11,9 @@ div.p-2
   //- select(v-model="cardType")
   //-   option(v-for="(item, i) in typeList" :key="item" :value="i + 1") {{item}}
   input(type="file" v-if="!imageBase64 && !oldImageBase64" ref="imageInput" @change="imageChangeEvent")
-  button(v-else @click.stop="cleanImageBase64") remove
+  button.text-white.bg-red-800.px-2.mr-2.rounded(v-else @click.stop="cleanImageBase64") REMOVE
+  button.text-white.bg-blue-800.px-2.mr-2.rounded(@click.stop="toggleCircle") CIRCLE
+  button.text-white.bg-yellow-800.px-2.rounded(@click.stop="toggleRounded") ROUND
 #item(ref="itemDom")
 img(v-if="oldImageBase64" :src="oldImageBase64")
 div.flex.items-center
@@ -22,11 +24,15 @@ div.flex.items-center
   button.btn.mx-2(@click.stop="btnEvent") 返回
 </template>
 <script lang="ts">
-import { defineComponent, ref, reactive, onMounted } from 'vue'
+import { defineComponent, ref, reactive, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
 import * as PIXI from 'pixi.js'
-import { addCardItem, getCategoryOptions } from '../../service/api.js' // updateItemImageById, updateItemColorById
+import { addCardItem, updateCardItem, getCategoryOptions } from '../../service/api.js' // updateItemImageById, updateItemColorById
+import BlackShape from '/src/assets/images/whiteshape.png'
+// import step6 from '/src/assets/images/recipe1/step6.png'
+
+
 interface RoulettePrize {
   label: string,
   occupy: number,
@@ -55,6 +61,9 @@ export default defineComponent({
     const imageBase64 = ref('')
     const oldImageBase64 = ref('')
     const maxImgWidt = 8000
+    const showCircle = ref(false)
+    const showRounded = ref(true)
+    const isEditMode = ref(false)
     // getCategoryOptions()
     //   .then(({ data }) => {
     //     data.forEach((item: any) => { typeOptions.push(item) })
@@ -64,9 +73,16 @@ export default defineComponent({
       cardTitle.value = store.state.editingItem.title
       cardChinese.value = store.state.editingItem.chinese
       oldImageBase64.value = store.state.editingItem.image
+      cardType.value = store.state.editingItem.type
+      isEditMode.value = true
+      // console.log(store.state.editingItem)
     }
 
     let app
+    onUnmounted(() => {
+      store.commit('setEditingItem')
+    })
+
     onMounted(() => {
       const mainLayout: HTMLElement = document.getElementById('mainLayout')!
       // const { clientWidth, clientHeight } = mayLayout
@@ -100,7 +116,7 @@ export default defineComponent({
       const _img: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.from(imageBase64.value))
       // const _view: PIXI.Sprite = new PIXI.Sprite(PIXI.Texture.from(images[1]))
       const _background: PIXI.Graphics = new PIXI.Graphics()
-      // const _circle: PIXI.Graphics = new PIXI.Graphics()
+      
       const _scale:number = Math.min(currentSize.value / Math.max(_img.width, 800), 2);
 
       function HEXToVBColor(rrggbb: string) {
@@ -108,12 +124,6 @@ export default defineComponent({
         // const bbggrr = rrggbb.substr(4, 2) + rrggbb.substr(2, 2) + rrggbb.substr(0, 2);
         return parseInt(rrggbb.replace('#', ''), 16);
       }
-
-      // _circle.beginFill(HEXToVBColor('#FF0000'))
-      // _circle.drawCircle(0, 0, 260)
-      // _circle.endFill()
-
-
       _background.beginFill(HEXToVBColor(color.value || '#FFFFFF'))
       _background.drawRect(0, 0, 800, 800)
       _background.endFill()
@@ -144,6 +154,30 @@ export default defineComponent({
       // itemContainer.addChild(_view)
       // itemContainer.addChild(_circle)
       itemContainer.addChild(_img)
+      if (showCircle.value) {
+        const _circle: PIXI.Graphics = new PIXI.Graphics()
+        _circle.beginFill(HEXToVBColor('#FF0000'))
+        _circle.drawCircle(400, 400, 360)
+        _circle.endFill()
+        _img.mask = _circle
+      } else if (showRounded.value) {
+        const _blackShape: PIXI.Sprite = PIXI.Sprite.from(BlackShape)
+        // const _blackShape: PIXI.Graphics = new PIXI.Graphics()
+        const _rate = 800 / _blackShape.width
+        _blackShape.scale.x = _blackShape.scale.y = _rate
+        _blackShape.pivot.x = 400 / _rate
+        _blackShape.pivot.y = _blackShape.height * .5
+        // _blackShape.y = (800 - _blackShape.height) / 2
+        // _blackShape.pivot.y = (-400) / _rate
+        itemContainer.addChild(_blackShape)
+
+        // console.log(_blackShape.height)
+        _img.mask = _blackShape
+        // _blackShape.mask = _img
+      }
+
+
+
       itemContainer.x = canvasSize.width * .5
       itemContainer.y = canvasSize.width * .5
       if (itemDom.value) {
@@ -168,8 +202,6 @@ export default defineComponent({
     function onDragStart(e) {
       selectedTarget.value.alpha = 0.5;
       // Start listening to dragging on the stage
-
-      
       startPostion.x = e.clientX
       startPostion.y = e.clientY
       startPostion.imgx = selectedTarget.value.x
@@ -243,7 +275,17 @@ export default defineComponent({
 
     function uploadImageEvent () {
       // title: string, chinese: string, color: string, base64: string, type: number
-      addCardItem({ title: cardTitle.value, color: color.value, chinese: cardChinese.value, base64: app.renderer.view.toDataURL('image/jpeg', 0.78), type: +cardType.value });
+      if (isEditMode.value) {
+        updateCardItem({ 
+          id: store.state.editingItem.id,
+          title: cardTitle.value, 
+          color: color.value, 
+          chinese: cardChinese.value, 
+          image: app.renderer.view.toDataURL('image/jpeg', 0.78), 
+          typeId: +cardType.value })
+      } else {
+        addCardItem({ title: cardTitle.value, color: color.value, chinese: cardChinese.value, base64: app.renderer.view.toDataURL('image/jpeg', 0.78), type: +cardType.value });
+      }
     }
 
     function cleanImageBase64 () {
@@ -259,7 +301,17 @@ export default defineComponent({
       }
     }
 
-    return { itemDom, imageInput, color, currentSize, renderCanvas, btnEvent, cardTitle, cardChinese, cardType, imageChangeEvent, setColor, uploadImageEvent, typeList, typeOptions, imageBase64, oldImageBase64, cleanImageBase64 }
+    function toggleCircle() {
+      showCircle.value = !showCircle.value
+      renderCanvas()
+    }
+
+    function toggleRounded () {
+      showRounded.value = !showRounded.value
+      renderCanvas()
+    }
+
+    return { showCircle, toggleCircle, toggleRounded, itemDom, imageInput, color, currentSize, renderCanvas, btnEvent, cardTitle, cardChinese, cardType, imageChangeEvent, setColor, uploadImageEvent, typeList, typeOptions, imageBase64, oldImageBase64, cleanImageBase64 }
   }
 })
 </script>

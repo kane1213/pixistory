@@ -31,7 +31,8 @@ const routeName = computed(() => route.name)
 .default
   @apply flex flex-col h-screen
 #mainLayout
-  @apply max-w-xl flex-1 mx-auto w-full border
+  @apply flex-1 mx-auto w-full border
+  max-width: 802px
   &.cardMode
     max-width: 802px
 </style>

@@ -19,3 +19,5 @@ export const updateItemImageColorById = (id, color, base64) => ajax(`/card/updat
 export const removeCardById = id => ajax(`/card/removeItem/${id}`, 'delete')
 
 export const addCardItem = data => ajax('/card/addNewItem', 'post', data, true)
+
+export const updateCardItem = data => ajax('/card/updateItem', 'put', data, true)

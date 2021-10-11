@@ -21,26 +21,28 @@ export default defineComponent({
       { key: 'custom1', label: '編輯', width: 'auto' }
     ]
     const router = useRouter()
-    const items = ref([])
+    // const items = ref([])
+    const items = computed(() => store.state.options.type.map(type => ({ title: type.text, chinese: type.label, type: type.value })))
     const gridWidths = fields.reduce((acc, field) => acc.concat(field.width || '1fr') , []).join(' ')
     const store = useStore()
 
-    async function fetchCategoryOptions () {
-      const { data } = await getCategories()
-      items.value = data.items
-      // items.value = [
-      //   { text: 'Animals', label: '動物', value: 1 },
-      //   { text: 'Foods', label: '食物', value: 2 },
-      //   { text: 'Environment', label: '環境', value: 3 }
-      // ]
-    }
+    // async function fetchCategoryOptions () {
+    //   const { data } = await getCategories()
+
+    //   store.commit('setTypeOptions', data.items)
+    //   items.value = data.items
+
+    // }
 
     function itemClickEvent (item = {}) {
       store.commit('setEditingItem', item)
       router.push({ name: 'CategoryItem' })
     }
 
-    fetchCategoryOptions()
+    if (store.state.options.type.length === 0) {
+      store.dispatch('actSetTypeOptions')
+    }
+    // fetchCategoryOptions()
 
 
     return { items, fields, gridWidths, itemClickEvent }
